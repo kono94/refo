@@ -7,6 +7,10 @@ public class DiscreteAction<A extends Enum> implements Action{
         this.action = action;
     }
 
+    public A getValue(){
+        return action;
+    }
+
     @Override
     public int getIndex(){
        return action.ordinal();

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class StepResult {
-    private Observation observation;
+    private State observation;
     private double reward;
     private boolean done;
     private String info;

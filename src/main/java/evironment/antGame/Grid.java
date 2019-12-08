@@ -19,18 +19,22 @@ public class Grid {
         grid = new Cell[width][height];
     }
 
-    public void initCells(){
+    public Grid(int width, int height){
+        this(width, height, 0);
+    }
+
+    public void initRandomWorld(){
         for(int x = 0; x < width; ++x){
             for(int y = 0; y < height; ++y){
                 if( RNG.getRandom().nextDouble() < foodDensity){
-                    grid[x][y] = new Cell(CellType.FOOD, 1);
+                    grid[x][y] = new Cell(new Point(x,y), CellType.FOOD, 1);
                 }else{
-                    grid[x][y] = new Cell(CellType.FREE);
+                    grid[x][y] = new Cell(new Point(x,y), CellType.FREE);
                 }
             }
         }
         start = new Point(RNG.getRandom().nextInt(width), RNG.getRandom().nextInt(height));
-        grid[start.x][start.y] = new Cell(CellType.START);
+        grid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
     }
 
     public Point getStartPoint(){
@@ -41,6 +45,12 @@ public class Grid {
         return grid;
     }
 
+    public Cell getCell(Point pos){
+        return grid[pos.x][pos.y];
+    }
+    public Cell getCell(int x, int y){
+        return grid[x][y];
+    }
     public int getWidth(){
         return width;
     }

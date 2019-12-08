@@ -5,4 +5,6 @@ public enum CellType {
     FREE,
     OBSTACLE,
     FOOD,
+    UNKNOWN,
+    POSSIBLE_FOOD,
 }

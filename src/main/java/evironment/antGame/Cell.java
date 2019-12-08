@@ -1,23 +1,27 @@
 package evironment.antGame;
 
-public class Cell {
-    private CellType type;
-    private int food;
+import lombok.Getter;
+import lombok.Setter;
 
-    public Cell(CellType cellType, int foodAmount){
+import java.awt.*;
+
+public class Cell {
+    @Getter
+    private CellType type;
+    @Getter
+    @Setter
+    private int food;
+    @Getter
+    private Point pos;
+
+    public Cell(Point pos, CellType cellType, int foodAmount){
+        this.pos = pos;
         type = cellType;
         food = foodAmount;
     }
 
-    public Cell(CellType cellType){
-       this(cellType, 0);
+    public Cell( Point pos, CellType cellType){
+       this(pos, cellType, 0);
     }
 
-    public void setFoodCount(int amount){
-        food = amount;
-    }
-
-    public int getFoodCount(){
-        return food;
-    }
 }
