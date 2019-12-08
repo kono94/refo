@@ -41,6 +41,18 @@ public class Grid {
         return start;
     }
 
+    public boolean isAllFoodCollected(){
+        for(int x = 0; x < width; ++x){
+            for(int y = 0; y < height; ++y){
+              if(grid[x][y].getFood() > 0){
+                  return false;
+              }
+            }
+        }
+
+        return true;
+    }
+
     public Cell[][] getGrid(){
         return grid;
     }

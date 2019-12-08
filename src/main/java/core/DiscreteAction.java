@@ -28,13 +28,9 @@ public class DiscreteAction<A extends Enum> implements Action{
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-
-        return getIndex() == ((DiscreteAction) obj).getIndex();
+        if(obj instanceof DiscreteAction){
+            return getIndex() == ((DiscreteAction) obj).getIndex();
+        }
+        return super.equals(obj);
     }
 }

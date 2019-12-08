@@ -4,17 +4,24 @@ package evironment.antGame;
 import java.awt.*;
 
 public class AntAgent {
-    // the brain
+    // the learned representation of the environment (gridWorld)
     private Cell[][] knownWorld;
-    private Point pos;
 
     public AntAgent(int width, int height){
         knownWorld = new Cell[width][height];
         initUnknownWorld();
     }
 
+    /**
+     * Learn from observation received after last action
+     * and generate a markov state.
+     *
+     * @param observation received input from the game host (environment)
+     * @return the current state of the agent
+     */
     public AntState feedObservation(AntObservation observation){
-
+        knownWorld[observation.getPos().x][observation.getPos().y] = observation.getCell();
+        return new AntState(knownWorld, observation.getPos(), observation.hasFood());
     }
 
     private void initUnknownWorld(){
@@ -25,7 +32,7 @@ public class AntAgent {
         }
     }
 
-    public Point getPos(){
-        return pos;
+    public Cell getCell(Point pos){
+        return knownWorld[pos.x][pos.y];
     }
 }

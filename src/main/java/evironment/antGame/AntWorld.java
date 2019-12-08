@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class AntWorld {
     /**
-     * 
+     *
      */
     private Grid grid;
     /**
@@ -29,9 +29,14 @@ public class AntWorld {
      */
     private AntAgent antAgent;
 
+    private int tick;
+    private int maxEpisodeTicks;
+
     public AntWorld(int width, int height, double foodDensity){
         grid = new Grid(width, height, foodDensity);
         antAgent = new AntAgent(width, height);
+        tick = 0;
+        maxEpisodeTicks = 1000;
     }
 
     public AntWorld(){
@@ -39,7 +44,7 @@ public class AntWorld {
     }
 
     private static class MyAnt{
-        int x,y;
+        Point pos;
         boolean hasFood;
         boolean spawned;
     }
@@ -47,30 +52,125 @@ public class AntWorld {
     public StepResult step(DiscreteAction<AntAction> action){
         AntObservation observation;
         State newState;
+        double reward = 0;
+        String info = "";
+        boolean done = false;
+
         if(!myAnt.spawned){
-            observation = new AntObservation(grid.getCell(grid.getStartPoint()));
+            myAnt.spawned = true;
+            myAnt.pos = grid.getStartPoint();
+
+            observation = new AntObservation(grid.getCell(myAnt.pos), myAnt.pos, myAnt.hasFood);
             newState = antAgent.feedObservation(observation);
-            return new StepResult(newState, 0.0, false, "Just spawned on the map");
+            reward = 0.0;
+            return new StepResult(newState, reward, false, "Just spawned on the map");
         }
+
+        Cell currentCell = grid.getCell(myAnt.pos);
+        Point potentialNextPos = new Point(myAnt.pos.x, myAnt.pos.y);
+        boolean stayOnCell = true;
+        // flag to enable a check if all food has been collected only fired if food was dropped
+        // on the starting position
+        boolean checkCompletion = false;
+
         switch (action.getValue()) {
             case MOVE_UP:
+                potentialNextPos.y -= 1;
+                stayOnCell = false;
                 break;
             case MOVE_RIGHT:
+                potentialNextPos.x += 1;
+                stayOnCell = false;
                 break;
             case MOVE_DOWN:
+                potentialNextPos.y += 1;
+                stayOnCell = false;
                 break;
             case MOVE_LEFT:
+                potentialNextPos.x -= 1;
+                stayOnCell = false;
                 break;
             case PICK_UP:
+                if(myAnt.hasFood){
+                    // Ant tries to pick up food but can only hold one piece
+                    reward = Reward.FOOD_PICK_UP_FAIL_HAS_FOOD_ALREADY;
+                }else if(currentCell.getFood() == 0){
+                    // Ant tries to pick up food on cell that has no food on it
+                    reward = Reward.FOOD_PICK_UP_FAIL_NO_FOOD;
+                }else if(currentCell.getFood() > 0){
+                    // Ant successfully picks up food
+                    currentCell.setFood(currentCell.getFood() - 1);
+                    myAnt.hasFood = true;
+                    reward = Reward.FOOD_DROP_DOWN_SUCCESS;
+                }
                 break;
             case DROP_DOWN:
+                if(!myAnt.hasFood){
+                    // Ant had no food to drop
+                    reward = Reward.FOOD_DROP_DOWN_FAIL_NO_FOOD;
+                }else{
+                    // Drop food onto the ground
+                    currentCell.setFood(currentCell.getFood() + 1);
+                    myAnt.hasFood = false;
+
+                    // negative reward if the agent drops food on any other field
+                    // than the starting point
+                    if(currentCell.getType() != CellType.START){
+                        reward = Reward.FOOD_DROP_DOWN_FAIL_NOT_START;
+                    }else{
+                        reward = Reward.FOOD_DROP_DOWN_SUCCESS;
+                        checkCompletion = true;
+                    }
+                }
                 break;
             default:
                 throw new RuntimeException(String.format("Action <%s> is not a valid action!", action.toString()));
-                break;
         }
+
+        // movement action was selected
+        if(!stayOnCell){
+            if(!isInGrid(potentialNextPos)){
+                stayOnCell = true;
+                reward = Reward.RAN_INTO_WALL;
+            }else if(hitObstacle(potentialNextPos)){
+                stayOnCell = true;
+                reward = Reward.RAN_INTO_OBSTACLE;
+            }
+        }
+
+        // valid movement
+        if(!stayOnCell){
+            myAnt.pos = potentialNextPos;
+            if(antAgent.getCell(myAnt.pos).getType() == CellType.UNKNOWN){
+                // the ant will move to a cell that was previously unknown
+                reward = Reward.UNKNOWN_FIELD_EXPLORED;
+            }else{
+                reward = 0;
+            }
+        }
+
+        // get observation after action was computed
+        observation = new AntObservation(grid.getCell(myAnt.pos), myAnt.pos, myAnt.hasFood);
+
+        // let the ant agent process the observation to create a valid markov state
         newState = antAgent.feedObservation(observation);
-        return new StepResult(newState, 0.0, false, "");
+
+        if(checkCompletion){
+            done = grid.isAllFoodCollected();
+        }
+
+        if(++tick == maxEpisodeTicks){
+            done = true;
+        }
+        return new StepResult(newState, reward, done, info);
+    }
+
+    private boolean isInGrid(Point pos){
+        return pos.x > 0 && pos.x < grid.getWidth() && pos.y > 0 && pos.y < grid.getHeight();
+    }
+
+    private boolean hitObstacle(Point pos){
+        return grid.getCell(pos).getType() == CellType.OBSTACLE;
     }
 
     public void reset() {
@@ -79,6 +179,9 @@ public class AntWorld {
         myAnt = new MyAnt();
     }
 
+    public void setMaxEpisodeLength(int maxTicks){
+        this.maxEpisodeTicks = maxTicks;
+    }
     public Point getSpawningPoint(){
         return grid.getStartPoint();
     }
