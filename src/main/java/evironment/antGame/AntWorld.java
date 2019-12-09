@@ -1,6 +1,7 @@
 package evironment.antGame;
 
 import core.*;
+import evironment.antGame.gui.MainFrame;
 
 import java.awt.*;
 
@@ -31,22 +32,28 @@ public class AntWorld {
 
     private int tick;
     private int maxEpisodeTicks;
+    MainFrame gui;
 
     public AntWorld(int width, int height, double foodDensity){
         grid = new Grid(width, height, foodDensity);
         antAgent = new AntAgent(width, height);
+        gui = new MainFrame(this, antAgent);
         tick = 0;
         maxEpisodeTicks = 1000;
+        reset();
     }
 
+    public MainFrame getGui(){
+        return gui;
+    }
     public AntWorld(){
         this(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT, Constants.DEFAULT_FOOD_DENSITY);
     }
 
-    private static class MyAnt{
-        Point pos;
-        boolean hasFood;
-        boolean spawned;
+    public class MyAnt{
+        public Point pos;
+        public boolean hasFood;
+        public boolean spawned;
     }
 
     public StepResult step(DiscreteAction<AntAction> action){
@@ -184,5 +191,28 @@ public class AntWorld {
     }
     public Point getSpawningPoint(){
         return grid.getStartPoint();
+    }
+
+    public Cell[][] getCellArray(){
+        return grid.getGrid();
+    }
+
+    public MyAnt getMyAnt(){
+        return myAnt;
+    }
+    public static void main(String[] args) {
+        RNG.setSeed(1993);
+        AntWorld a = new AntWorld(30, 30, 0.1);
+        System.out.println("ayay");
+        a.getGui().repaint();
+        for(int i = 0; i< 10; ++i){
+            a.step(new DiscreteAction<>(AntAction.MOVE_RIGHT));
+            a.getGui().repaint();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

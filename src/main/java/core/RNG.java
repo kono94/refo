@@ -3,10 +3,10 @@ package core;
 import java.util.Random;
 
 public class RNG {
-    private static final Random rng;
-    private static final int SEED = 123;
+    private static Random rng;
+    private static int seed = 123;
     static {
-        rng = new Random(SEED);
+        rng = new Random(seed);
     }
 
     public static Random getRandom() {
@@ -14,6 +14,11 @@ public class RNG {
     }
 
     public static void reseed(){
-        rng.setSeed(SEED);
+        rng.setSeed(seed);
+    }
+
+    public static void setSeed(int seed){
+        RNG.seed = seed;
+        rng.setSeed(seed);
     }
 }

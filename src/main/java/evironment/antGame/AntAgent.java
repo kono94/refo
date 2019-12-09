@@ -35,4 +35,8 @@ public class AntAgent {
     public Cell getCell(Point pos){
         return knownWorld[pos.x][pos.y];
     }
+
+    public Cell[][] getKnownWorld(){
+        return knownWorld;
+    }
 }
