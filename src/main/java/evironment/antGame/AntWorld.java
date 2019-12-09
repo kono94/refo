@@ -1,10 +1,11 @@
 package evironment.antGame;
 
 import core.*;
+import core.algo.Learning;
+import core.algo.MC.MonteCarloOnPolicyEGreedy;
 import evironment.antGame.gui.MainFrame;
 
 
-import javax.swing.*;
 import java.awt.*;
 
 public class AntWorld implements Environment<AntAction>{
@@ -39,9 +40,8 @@ public class AntWorld implements Environment<AntAction>{
     public AntWorld(int width, int height, double foodDensity){
         grid = new Grid(width, height, foodDensity);
         antAgent = new AntAgent(width, height);
-        myAnt = new Ant(new Point(-1,-1), 0, false, false);
+        myAnt = new Ant();
         gui = new MainFrame(this, antAgent);
-        tick = 0;
         maxEpisodeTicks = 1000;
         reset();
     }
@@ -55,22 +55,12 @@ public class AntWorld implements Environment<AntAction>{
     }
 
     @Override
-    public StepResult step(AntAction action){
+    public StepResultEnvironment step(AntAction action){
         AntObservation observation;
         State newState;
         double reward = 0;
         String info = "";
         boolean done = false;
-
-        if(!myAnt.isSpawned()){
-            myAnt.setSpawned(true);
-            myAnt.getPos().setLocation(grid.getStartPoint());
-            observation = new AntObservation(grid.getCell(myAnt.getPos()), myAnt.getPos(), myAnt.hasFood());
-            newState = antAgent.feedObservation(observation);
-            reward = 0.0;
-            ++tick;
-            return new StepResult(newState, reward, false, "Just spawned on the map");
-        }
 
         Cell currentCell = grid.getCell(myAnt.getPos());
         Point potentialNextPos = new Point(myAnt.getPos().x, myAnt.getPos().y);
@@ -107,7 +97,7 @@ public class AntWorld implements Environment<AntAction>{
                     // Ant successfully picks up food
                     currentCell.setFood(currentCell.getFood() - 1);
                     myAnt.setHasFood(true);
-                    reward = Reward.FOOD_DROP_DOWN_SUCCESS;
+                    reward = Reward.FOOD_PICK_UP_SUCCESS;
                 }
                 break;
             case DROP_DOWN:
@@ -169,24 +159,30 @@ public class AntWorld implements Environment<AntAction>{
         if(++tick == maxEpisodeTicks){
             done = true;
         }
-        return new StepResult(newState, reward, done, info);
+
+        StepResultEnvironment result = new StepResultEnvironment(newState, reward, done, info);
+        getGui().update(action, result);
+        return result;
     }
 
     private boolean isInGrid(Point pos){
-        return pos.x > 0 && pos.x < grid.getWidth() && pos.y > 0 && pos.y < grid.getHeight();
+        return pos.x >= 0 && pos.x < grid.getWidth() && pos.y >= 0 && pos.y < grid.getHeight();
     }
 
     private boolean hitObstacle(Point pos){
         return grid.getCell(pos).getType() == CellType.OBSTACLE;
     }
 
-    public void reset() {
+    public State reset() {
         RNG.reseed();
         grid.initRandomWorld();
-        myAnt.getPos().setLocation(-1,-1);
+        antAgent.initUnknownWorld();
+        tick = 0;
+        myAnt.getPos().setLocation(grid.getStartPoint());
         myAnt.setPoints(0);
         myAnt.setHasFood(false);
-        myAnt.setSpawned(false);
+        AntObservation observation = new AntObservation(grid.getCell(myAnt.getPos()), myAnt.getPos(), myAnt.hasFood());
+        return antAgent.feedObservation(observation);
     }
 
     public void setMaxEpisodeLength(int maxTicks){
@@ -207,21 +203,14 @@ public class AntWorld implements Environment<AntAction>{
     public Ant getAnt(){
         return myAnt;
     }
+
     public static void main(String[] args) {
         RNG.setSeed(1993);
-        AntWorld a = new AntWorld(10, 10, 0.1);
-        ListDiscreteActionSpace<AntAction> actionSpace =
-                new ListDiscreteActionSpace<>(AntAction.MOVE_LEFT, AntAction.MOVE_RIGHT);
 
-        for(int i = 0; i< 1000; ++i){
-            AntAction selectedAction = actionSpace.getAllActions().get(RNG.getRandom().nextInt(actionSpace.getNumberOfAction()));
-            StepResult step = a.step(selectedAction);
-            SwingUtilities.invokeLater(()-> a.getGui().update(selectedAction, step));
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        Learning<AntAction> monteCarlo = new MonteCarloOnPolicyEGreedy<>(
+                new AntWorld(3, 3, 0.1),
+                new ListDiscreteActionSpace<>(AntAction.values())
+        );
+        monteCarlo.learn(100,5);
     }
 }

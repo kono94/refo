@@ -1,5 +1,6 @@
 package core;
 
 public interface Environment<A extends Enum> {
-    StepResult step(A action);
+    StepResultEnvironment step(A action);
+    State reset();
 }

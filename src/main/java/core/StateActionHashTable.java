@@ -55,11 +55,10 @@ public class StateActionHashTable<A extends Enum> implements StateActionTable<A>
 
     @Override
     public Map<A, Double> getActionValues(State state) {
-        Map<A, Double> actionValues = table.get(state);
-        if(actionValues == null){
-            actionValues = createDefaultActionValues();
+        if(table.get(state) == null){
+            table.put(state, createDefaultActionValues());
         }
-        return actionValues;
+        return table.get(state);
     }
 
     public static void main(String[] args) {

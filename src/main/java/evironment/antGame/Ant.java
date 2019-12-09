@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import java.awt.*;
 
-@AllArgsConstructor
 @Getter
 @Setter
 public class Ant {
@@ -15,10 +14,14 @@ public class Ant {
     @Setter(AccessLevel.NONE)
     private Point pos;
     private int points;
-    private boolean spawned;
     @Getter(AccessLevel.NONE)
     private boolean hasFood;
 
+    public Ant(){
+        pos = new Point();
+        points = 0;
+        hasFood = false;
+    }
     public boolean hasFood(){
         return hasFood;
     }

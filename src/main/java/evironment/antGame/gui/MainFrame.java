@@ -1,6 +1,6 @@
 package evironment.antGame.gui;
 
-import core.StepResult;
+import core.StepResultEnvironment;
 import evironment.antGame.AntAction;
 import evironment.antGame.AntAgent;
 import evironment.antGame.AntWorld;
@@ -33,9 +33,9 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
-    public void update(AntAction lastAction, StepResult stepResult){
+    public void update(AntAction lastAction, StepResultEnvironment stepResultEnvironment){
         historyPanel.addText(String.format("Tick %d: \t Selected action: %s \t Reward: %f \t Info: %s \n totalPoints: %d \t hasFood: %b \t ",
-                antWorld.getTick(), lastAction.toString(), stepResult.getReward(), stepResult.getInfo(), antWorld.getAnt().getPoints(), antWorld.getAnt().hasFood()));
+                antWorld.getTick(), lastAction.toString(), stepResultEnvironment.getReward(), stepResultEnvironment.getInfo(), antWorld.getAnt().getPoints(), antWorld.getAnt().hasFood()));
 
         repaint();
     }

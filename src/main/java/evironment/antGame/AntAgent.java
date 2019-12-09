@@ -9,7 +9,6 @@ public class AntAgent {
 
     public AntAgent(int width, int height){
         knownWorld = new Cell[width][height];
-        initUnknownWorld();
     }
 
     /**
@@ -24,7 +23,7 @@ public class AntAgent {
         return new AntState(knownWorld, observation.getPos(), observation.hasFood());
     }
 
-    private void initUnknownWorld(){
+    public void initUnknownWorld(){
         for(int x = 0; x < knownWorld.length; ++x){
             for(int y = 0; y < knownWorld[x].length; ++y){
                 knownWorld[x][y] = new Cell(new Point(x,y), CellType.UNKNOWN);

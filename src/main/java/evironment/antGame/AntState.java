@@ -11,17 +11,39 @@ import java.util.Arrays;
  * and therefor has to be deep copied
  */
 public class AntState implements State {
-    private Cell[][] knownWorld;
-    private Point pos;
-    private boolean hasFood;
-
+    private final Cell[][] knownWorld;
+    private final Point pos;
+    private final boolean hasFood;
+    private final int computedHash;
 
     public AntState(Cell[][] knownWorld, Point antPosition, boolean hasFood){
         this.knownWorld = deepCopyCellGrid(knownWorld);
         this.pos = deepCopyAntPosition(antPosition);
         this.hasFood = hasFood;
+        computedHash = computeHash();
     }
 
+    private int computeHash(){
+        int hash = 7;
+        int prime = 31;
+
+        int unknown = 0;
+        int diff = 0;
+        for (int i = 0; i < knownWorld.length; i++) {
+            for (int j = 0; j < knownWorld[i].length; j++) {
+                if(knownWorld[i][j].getType() == CellType.UNKNOWN){
+                    unknown += 1;
+                }else{
+                    diff +=1;
+                }
+            }
+        }
+        hash = prime * hash + unknown;
+        hash = prime * hash * diff;
+        hash = prime * hash + (hasFood ? 1:0);
+        hash = prime * hash + pos.hashCode();
+        return hash;
+    }
     private Cell[][] deepCopyCellGrid(Cell[][] toCopy){
         Cell[][] cells = new Cell[toCopy.length][toCopy[0].length];
         for (int i = 0; i < cells.length; i++) {
@@ -45,12 +67,7 @@ public class AntState implements State {
     //TODO: make this a utility function to generate hash Code based upon 2 prime numbers
     @Override
     public int hashCode(){
-        int hash = 7;
-        int prime = 31;
-        hash = prime * hash + Arrays.hashCode(knownWorld);
-        hash = prime * hash + (hasFood ? 1:0);
-        hash = prime * hash + pos.hashCode();
-        return hash;
+       return computedHash;
     }
 
     @Override
