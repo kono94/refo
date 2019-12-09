@@ -1,9 +1,9 @@
 package core;
 
-import java.util.Set;
+import java.util.List;
 
 public interface ActionSpace<A extends Enum> {
-    Set<Action> getAllActions();
     int getNumberOfAction();
     void addAction(DiscreteAction<A> a);
+    void addActions(A[] as);
 }

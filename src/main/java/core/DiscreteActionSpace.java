@@ -1,13 +1,13 @@
 package core;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DiscreteActionSpace<A extends Enum> implements ActionSpace<A>{
-    private Set<Action> actions;
+    private List<DiscreteAction<A>> actions;
 
     public DiscreteActionSpace(){
-        actions = new HashSet<>();
+        actions = new ArrayList<>();
     }
 
     @Override
@@ -16,13 +16,18 @@ public class DiscreteActionSpace<A extends Enum> implements ActionSpace<A>{
     }
 
     @Override
+    public void addActions(A[] as) {
+        for(A a : as){
+            actions.add(new DiscreteAction<>(a));
+        }
+    }
+
+    @Override
     public int getNumberOfAction(){
         return actions.size();
     }
 
-
-    @Override
-    public Set<Action> getAllActions(){
+    public List<DiscreteAction<A>> getAllDiscreteActions(){
         return actions;
     }
 }

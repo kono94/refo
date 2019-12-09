@@ -58,9 +58,9 @@ public class StateActionHashTable<A extends Enum> implements StateActionTable {
 
     private Map<Action, Double> createDefaultActionValues(){
         final Map<Action, Double> defaultActionValues = new HashMap<>();
-        for(Action action: actionSpace.getAllActions()){
-            defaultActionValues.put(action, DEFAULT_VALUE);
-        }
+       // for(Action action: actionSpace.getAllActions()){
+       //     defaultActionValues.put(action, DEFAULT_VALUE);
+        //}
         return defaultActionValues;
     }
 }

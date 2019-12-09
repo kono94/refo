@@ -27,7 +27,7 @@ public class Grid {
         for(int x = 0; x < width; ++x){
             for(int y = 0; y < height; ++y){
                 if( RNG.getRandom().nextDouble() < foodDensity){
-                    grid[x][y] = new Cell(new Point(x,y), CellType.FOOD, 1);
+                    grid[x][y] = new Cell(new Point(x,y), CellType.FREE, 1);
                 }else{
                     grid[x][y] = new Cell(new Point(x,y), CellType.FREE);
                 }

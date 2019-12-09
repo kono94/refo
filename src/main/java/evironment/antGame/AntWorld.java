@@ -3,6 +3,7 @@ package evironment.antGame;
 import core.*;
 import evironment.antGame.gui.MainFrame;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class AntWorld {
@@ -37,6 +38,7 @@ public class AntWorld {
     public AntWorld(int width, int height, double foodDensity){
         grid = new Grid(width, height, foodDensity);
         antAgent = new AntAgent(width, height);
+        myAnt = new Ant(new Point(-1,-1), 0, false, false);
         gui = new MainFrame(this, antAgent);
         tick = 0;
         maxEpisodeTicks = 1000;
@@ -60,10 +62,11 @@ public class AntWorld {
 
         if(!myAnt.isSpawned()){
             myAnt.setSpawned(true);
-            myAnt.setPos(grid.getStartPoint());
+            myAnt.getPos().setLocation(grid.getStartPoint());
             observation = new AntObservation(grid.getCell(myAnt.getPos()), myAnt.getPos(), myAnt.hasFood());
             newState = antAgent.feedObservation(observation);
             reward = 0.0;
+            ++tick;
             return new StepResult(newState, reward, false, "Just spawned on the map");
         }
 
@@ -120,6 +123,7 @@ public class AntWorld {
                         reward = Reward.FOOD_DROP_DOWN_FAIL_NOT_START;
                     }else{
                         reward = Reward.FOOD_DROP_DOWN_SUCCESS;
+                        myAnt.setPoints(myAnt.getPoints() + 1);
                         checkCompletion = true;
                     }
                 }
@@ -141,7 +145,7 @@ public class AntWorld {
 
         // valid movement
         if(!stayOnCell){
-            myAnt.setPos(potentialNextPos);
+            myAnt.getPos().setLocation(potentialNextPos);
             if(antAgent.getCell(myAnt.getPos()).getType() == CellType.UNKNOWN){
                 // the ant will move to a cell that was previously unknown
                 reward = Reward.UNKNOWN_FIELD_EXPLORED;
@@ -177,7 +181,10 @@ public class AntWorld {
     public void reset() {
         RNG.reseed();
         grid.initRandomWorld();
-        myAnt = new Ant(new Point(-1,-1), false, false);
+        myAnt.getPos().setLocation(-1,-1);
+        myAnt.setPoints(0);
+        myAnt.setHasFood(false);
+        myAnt.setSpawned(false);
     }
 
     public void setMaxEpisodeLength(int maxTicks){
@@ -191,19 +198,25 @@ public class AntWorld {
         return grid.getGrid();
     }
 
+    public int getTick(){
+        return tick;
+    }
+
     public Ant getAnt(){
         return myAnt;
     }
     public static void main(String[] args) {
         RNG.setSeed(1993);
         AntWorld a = new AntWorld(10, 10, 0.1);
-        System.out.println("ayay");
-        a.getGui().repaint();
-        for(int i = 0; i< 10; ++i){
-            a.step(new DiscreteAction<>(AntAction.MOVE_RIGHT));
-            a.getGui().repaint();
+        DiscreteActionSpace<AntAction> actionSpace = new DiscreteActionSpace<>();
+        actionSpace.addActions(AntAction.values());
+
+        for(int i = 0; i< 1000; ++i){
+            DiscreteAction<AntAction> selectedAction = actionSpace.getAllDiscreteActions().get(RNG.getRandom().nextInt(actionSpace.getNumberOfAction()));
+            StepResult step = a.step(selectedAction);
+            SwingUtilities.invokeLater(()-> a.getGui().update(selectedAction.getValue(), step));
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

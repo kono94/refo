@@ -13,7 +13,6 @@ public class CellColor {
         map.put(CellType.FREE, Color.GREEN);
         map.put(CellType.START, Color.BLUE);
         map.put(CellType.UNKNOWN, Color.GRAY);
-        map.put(CellType.FOOD, Color.YELLOW);
         map.put(CellType.OBSTACLE, Color.RED);
     }
 }
