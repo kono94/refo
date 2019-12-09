@@ -1,19 +1,21 @@
 package core;
 
+import evironment.antGame.AntAction;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Premise: All states have the complete action space
  */
-public class StateActionHashTable<A extends Enum> implements StateActionTable {
+public class StateActionHashTable<A extends Enum> implements StateActionTable<A> {
 
-    private final Map<State, Map<Action, Double>> table;
-    private ActionSpace<A> actionSpace;
+    private final Map<State, Map<A, Double>> table;
+    private DiscreteActionSpace<A> discreteActionSpace;
 
-    public StateActionHashTable(ActionSpace<A> actionSpace){
+    public StateActionHashTable(DiscreteActionSpace<A> discreteActionSpace){
         table =  new HashMap<>();
-        this.actionSpace = actionSpace;
+        this.discreteActionSpace = discreteActionSpace;
     }
 
     /*
@@ -25,8 +27,8 @@ public class StateActionHashTable<A extends Enum> implements StateActionTable {
        method.
      */
     @Override
-    public double getValue(State state, Action action) {
-        final Map<Action, Double> actionValues = table.get(state);
+    public double getValue(State state, A action) {
+        final Map<A, Double> actionValues = table.get(state);
         if (actionValues != null) {
             return actionValues.get(action);
         }
@@ -40,8 +42,8 @@ public class StateActionHashTable<A extends Enum> implements StateActionTable {
        from the action space initialized with the default value.
      */
     @Override
-    public void setValue(State state, Action action, double value) {
-        final Map<Action, Double> actionValues;
+    public void setValue(State state, A action, double value) {
+        final Map<A, Double> actionValues;
         if (table.containsKey(state)) {
             actionValues = table.get(state);
         } else {
@@ -52,15 +54,27 @@ public class StateActionHashTable<A extends Enum> implements StateActionTable {
     }
 
     @Override
-    public Map<Action, Double> getActionValues(State state) {
-        return null;
+    public Map<A, Double> getActionValues(State state) {
+        Map<A, Double> actionValues = table.get(state);
+        if(actionValues == null){
+            actionValues = createDefaultActionValues();
+        }
+        return actionValues;
     }
 
-    private Map<Action, Double> createDefaultActionValues(){
-        final Map<Action, Double> defaultActionValues = new HashMap<>();
-       // for(Action action: actionSpace.getAllActions()){
-       //     defaultActionValues.put(action, DEFAULT_VALUE);
-        //}
+    public static void main(String[] args) {
+        DiscreteActionSpace<AntAction> da = new ListDiscreteActionSpace<>(AntAction.MOVE_RIGHT, AntAction.PICK_UP);
+        StateActionTable sat = new StateActionHashTable<>(da);
+        State t = new State() {
+        };
+
+        System.out.println(sat.getActionValues(t));
+    }
+    private Map<A, Double> createDefaultActionValues(){
+        final Map<A, Double> defaultActionValues = new HashMap<>();
+        for(A action: discreteActionSpace.getAllActions()){
+            defaultActionValues.put(action, DEFAULT_VALUE);
+        }
         return defaultActionValues;
     }
 }

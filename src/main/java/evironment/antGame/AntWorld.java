@@ -3,10 +3,11 @@ package evironment.antGame;
 import core.*;
 import evironment.antGame.gui.MainFrame;
 
+
 import javax.swing.*;
 import java.awt.*;
 
-public class AntWorld {
+public class AntWorld implements Environment<AntAction>{
     /**
      *
      */
@@ -53,7 +54,8 @@ public class AntWorld {
         this(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT, Constants.DEFAULT_FOOD_DENSITY);
     }
 
-    public StepResult step(DiscreteAction<AntAction> action){
+    @Override
+    public StepResult step(AntAction action){
         AntObservation observation;
         State newState;
         double reward = 0;
@@ -77,7 +79,7 @@ public class AntWorld {
         // on the starting position
         boolean checkCompletion = false;
 
-        switch (action.getValue()) {
+        switch (action) {
             case MOVE_UP:
                 potentialNextPos.y -= 1;
                 stayOnCell = false;
@@ -208,13 +210,13 @@ public class AntWorld {
     public static void main(String[] args) {
         RNG.setSeed(1993);
         AntWorld a = new AntWorld(10, 10, 0.1);
-        DiscreteActionSpace<AntAction> actionSpace = new DiscreteActionSpace<>();
-        actionSpace.addActions(AntAction.values());
+        ListDiscreteActionSpace<AntAction> actionSpace =
+                new ListDiscreteActionSpace<>(AntAction.MOVE_LEFT, AntAction.MOVE_RIGHT);
 
         for(int i = 0; i< 1000; ++i){
-            DiscreteAction<AntAction> selectedAction = actionSpace.getAllDiscreteActions().get(RNG.getRandom().nextInt(actionSpace.getNumberOfAction()));
+            AntAction selectedAction = actionSpace.getAllActions().get(RNG.getRandom().nextInt(actionSpace.getNumberOfAction()));
             StepResult step = a.step(selectedAction);
-            SwingUtilities.invokeLater(()-> a.getGui().update(selectedAction.getValue(), step));
+            SwingUtilities.invokeLater(()-> a.getGui().update(selectedAction, step));
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

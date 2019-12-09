@@ -2,11 +2,11 @@ package core;
 
 import java.util.Map;
 
-public interface StateActionTable {
+public interface StateActionTable<A extends Enum> {
     double DEFAULT_VALUE = 0.0;
 
-    double getValue(State state, Action action);
-    void setValue(State state, Action action, double value);
+    double getValue(State state, A action);
+    void setValue(State state, A action, double value);
 
-    Map<Action, Double> getActionValues(State state);
+    Map<A, Double> getActionValues(State state);
 }
