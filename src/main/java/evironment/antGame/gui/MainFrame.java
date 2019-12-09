@@ -10,7 +10,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame(AntWorld antWorld, AntAgent antAgent){
         setLayout(new BorderLayout());
-
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         CellsScrollPane worldPane = new CellsScrollPane(antWorld.getCellArray(), 10);
         CellsScrollPane antBrainPane = new CellsScrollPane(antAgent.getKnownWorld(), 10);
 

@@ -14,7 +14,7 @@ public class AntWorld {
      * Intern (backend) representation of the ant.
      * The AntWorld essentially acts like the game host of the original AntGame.
      */
-    private MyAnt myAnt;
+    private Ant myAnt;
     /**
      * The client agent. In the original AntGame the host would send jade messages
      * of the current observation to each client on every tick.
@@ -46,14 +46,9 @@ public class AntWorld {
     public MainFrame getGui(){
         return gui;
     }
+
     public AntWorld(){
         this(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT, Constants.DEFAULT_FOOD_DENSITY);
-    }
-
-    public class MyAnt{
-        public Point pos;
-        public boolean hasFood;
-        public boolean spawned;
     }
 
     public StepResult step(DiscreteAction<AntAction> action){
@@ -63,18 +58,17 @@ public class AntWorld {
         String info = "";
         boolean done = false;
 
-        if(!myAnt.spawned){
-            myAnt.spawned = true;
-            myAnt.pos = grid.getStartPoint();
-
-            observation = new AntObservation(grid.getCell(myAnt.pos), myAnt.pos, myAnt.hasFood);
+        if(!myAnt.isSpawned()){
+            myAnt.setSpawned(true);
+            myAnt.setPos(grid.getStartPoint());
+            observation = new AntObservation(grid.getCell(myAnt.getPos()), myAnt.getPos(), myAnt.hasFood());
             newState = antAgent.feedObservation(observation);
             reward = 0.0;
             return new StepResult(newState, reward, false, "Just spawned on the map");
         }
 
-        Cell currentCell = grid.getCell(myAnt.pos);
-        Point potentialNextPos = new Point(myAnt.pos.x, myAnt.pos.y);
+        Cell currentCell = grid.getCell(myAnt.getPos());
+        Point potentialNextPos = new Point(myAnt.getPos().x, myAnt.getPos().y);
         boolean stayOnCell = true;
         // flag to enable a check if all food has been collected only fired if food was dropped
         // on the starting position
@@ -98,7 +92,7 @@ public class AntWorld {
                 stayOnCell = false;
                 break;
             case PICK_UP:
-                if(myAnt.hasFood){
+                if(myAnt.hasFood()){
                     // Ant tries to pick up food but can only hold one piece
                     reward = Reward.FOOD_PICK_UP_FAIL_HAS_FOOD_ALREADY;
                 }else if(currentCell.getFood() == 0){
@@ -107,18 +101,18 @@ public class AntWorld {
                 }else if(currentCell.getFood() > 0){
                     // Ant successfully picks up food
                     currentCell.setFood(currentCell.getFood() - 1);
-                    myAnt.hasFood = true;
+                    myAnt.setHasFood(true);
                     reward = Reward.FOOD_DROP_DOWN_SUCCESS;
                 }
                 break;
             case DROP_DOWN:
-                if(!myAnt.hasFood){
+                if(!myAnt.hasFood()){
                     // Ant had no food to drop
                     reward = Reward.FOOD_DROP_DOWN_FAIL_NO_FOOD;
                 }else{
                     // Drop food onto the ground
                     currentCell.setFood(currentCell.getFood() + 1);
-                    myAnt.hasFood = false;
+                    myAnt.setHasFood(false);
 
                     // negative reward if the agent drops food on any other field
                     // than the starting point
@@ -147,8 +141,8 @@ public class AntWorld {
 
         // valid movement
         if(!stayOnCell){
-            myAnt.pos = potentialNextPos;
-            if(antAgent.getCell(myAnt.pos).getType() == CellType.UNKNOWN){
+            myAnt.setPos(potentialNextPos);
+            if(antAgent.getCell(myAnt.getPos()).getType() == CellType.UNKNOWN){
                 // the ant will move to a cell that was previously unknown
                 reward = Reward.UNKNOWN_FIELD_EXPLORED;
             }else{
@@ -157,7 +151,7 @@ public class AntWorld {
         }
 
         // get observation after action was computed
-        observation = new AntObservation(grid.getCell(myAnt.pos), myAnt.pos, myAnt.hasFood);
+        observation = new AntObservation(grid.getCell(myAnt.getPos()), myAnt.getPos(), myAnt.hasFood());
 
         // let the ant agent process the observation to create a valid markov state
         newState = antAgent.feedObservation(observation);
@@ -183,7 +177,7 @@ public class AntWorld {
     public void reset() {
         RNG.reseed();
         grid.initRandomWorld();
-        myAnt = new MyAnt();
+        myAnt = new Ant(new Point(-1,-1), false, false);
     }
 
     public void setMaxEpisodeLength(int maxTicks){
@@ -197,12 +191,12 @@ public class AntWorld {
         return grid.getGrid();
     }
 
-    public MyAnt getMyAnt(){
+    public Ant getAnt(){
         return myAnt;
     }
     public static void main(String[] args) {
         RNG.setSeed(1993);
-        AntWorld a = new AntWorld(30, 30, 0.1);
+        AntWorld a = new AntWorld(10, 10, 0.1);
         System.out.println("ayay");
         a.getGui().repaint();
         for(int i = 0; i< 10; ++i){

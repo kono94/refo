@@ -7,11 +7,14 @@ import java.awt.*;
 
 public class CellsScrollPane extends JScrollPane {
     private int cellSize;
+    private final int paneWidth = 500;
+    private final int paneHeight = 500;
 
     public CellsScrollPane(Cell[][] cells, int size){
         super();
         cellSize = size;
-        setPreferredSize(new Dimension(500, 500));
+        setPreferredSize(new Dimension(paneWidth, paneHeight));
+        cellSize = (paneWidth- cells.length) /cells.length;
         JPanel worldPanel = new JPanel(){
             {
                 setPreferredSize(new Dimension(cells.length * cellSize, cells[0].length * cellSize));
