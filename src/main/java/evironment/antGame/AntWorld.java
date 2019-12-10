@@ -2,7 +2,7 @@ package evironment.antGame;
 
 import core.*;
 import core.algo.Learning;
-import core.algo.MC.MonteCarloOnPolicyEGreedy;
+import core.algo.mc.MonteCarloOnPolicyEGreedy;
 import evironment.antGame.gui.MainFrame;
 
 
@@ -113,6 +113,7 @@ public class AntWorld implements Environment<AntAction>{
                     // than the starting point
                     if(currentCell.getType() != CellType.START){
                         reward = Reward.FOOD_DROP_DOWN_FAIL_NOT_START;
+                        done = true;
                     }else{
                         reward = Reward.FOOD_DROP_DOWN_SUCCESS;
                         myAnt.setPoints(myAnt.getPoints() + 1);
@@ -156,9 +157,13 @@ public class AntWorld implements Environment<AntAction>{
             done = grid.isAllFoodCollected();
         }
 
+        if(!done){
+            reward = -1;
+        }
         if(++tick == maxEpisodeTicks){
             done = true;
         }
+
 
         StepResultEnvironment result = new StepResultEnvironment(newState, reward, done, info);
         getGui().update(action, result);
@@ -211,6 +216,6 @@ public class AntWorld implements Environment<AntAction>{
                 new AntWorld(3, 3, 0.1),
                 new ListDiscreteActionSpace<>(AntAction.values())
         );
-        monteCarlo.learn(100,5);
+        monteCarlo.learn(20000,5);
     }
 }

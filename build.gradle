@@ -1,11 +1,12 @@
 plugins {
     id 'java'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 group 'net.lwenstrom.jan'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -15,4 +16,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compileOnly 'org.projectlombok:lombok:1.18.10'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
+}
+
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
 }

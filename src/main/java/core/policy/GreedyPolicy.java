@@ -5,6 +5,7 @@ import core.RNG;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class GreedyPolicy<A extends Enum> implements Policy<A> {
 
@@ -17,7 +18,7 @@ public class GreedyPolicy<A extends Enum> implements Policy<A> {
         List<A> equalHigh = new ArrayList<>();
 
         for(Map.Entry<A, Double> actionValue : actionValues.entrySet()){
-            System.out.println(actionValue.getKey()+ " " + actionValue.getValue() );
+           // System.out.println(actionValue.getKey() + " " + actionValue.getValue());
             if(highestValueAction == null || highestValueAction < actionValue.getValue()){
                 highestValueAction = actionValue.getValue();
                 equalHigh.clear();
@@ -27,6 +28,6 @@ public class GreedyPolicy<A extends Enum> implements Policy<A> {
             }
         }
 
-        return equalHigh.get(RNG.getRandom().nextInt(equalHigh.size()));
+        return equalHigh.get(new Random().nextInt(equalHigh.size()));
     }
 }

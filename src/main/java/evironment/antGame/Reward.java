@@ -7,7 +7,7 @@ public class Reward {
 
     public static final double FOOD_DROP_DOWN_FAIL_NO_FOOD = 0;
     public static final double FOOD_DROP_DOWN_FAIL_NOT_START = 0;
-    public static final double FOOD_DROP_DOWN_SUCCESS = 1000;
+    public static final double FOOD_DROP_DOWN_SUCCESS = 1;
 
     public static final double UNKNOWN_FIELD_EXPLORED = 0;
 
