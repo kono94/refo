@@ -34,22 +34,21 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends Learning<A> {
     }
 
     @Override
-    public void learn(int nrOfEpisodes, int delay) {
+    public void learn(int nrOfEpisodes) {
 
         Map<Pair<State, A>, Double> returnSum = new HashMap<>();
         Map<Pair<State, A>, Integer> returnCount = new HashMap<>();
 
-        State startingState = environment.reset();
         for(int i = 0; i < nrOfEpisodes; ++i) {
             List<StepResult<A>> episode = new ArrayList<>();
             State state = environment.reset();
-            double rewardSum = 0;
+            double sumOfRewards = 0;
             for(int j=0; j < 10; ++j){
                 Map<A, Double> actionValues = stateActionTable.getActionValues(state);
                 A chosenAction = policy.chooseAction(actionValues);
                 StepResultEnvironment envResult = environment.step(chosenAction);
                 State nextState = envResult.getState();
-                rewardSum +=  envResult.getReward();
+                sumOfRewards +=  envResult.getReward();
                 episode.add(new StepResult<>(state, chosenAction, envResult.getReward()));
 
                 if(envResult.isDone()) break;
@@ -57,13 +56,14 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends Learning<A> {
                 state = nextState;
 
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            System.out.printf("Episode %d \t Reward: %f \n", i, rewardSum);
+            dispatchEpisodeEnd(sumOfRewards);
+            System.out.printf("Episode %d \t Reward: %f \n", i, sumOfRewards);
             Set<Pair<State, A>> stateActionPairs = new HashSet<>();
 
             for(StepResult<A> sr: episode){

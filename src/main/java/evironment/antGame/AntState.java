@@ -1,7 +1,10 @@
 package evironment.antGame;
 
 import core.State;
+import core.gui.Visualizable;
+import evironment.antGame.gui.CellColor;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 
@@ -10,7 +13,7 @@ import java.util.Arrays;
  * Essentially a snapshot of the current Ant Agent
  * and therefor has to be deep copied
  */
-public class AntState implements State {
+public class AntState implements State, Visualizable {
     private final Cell[][] knownWorld;
     private final Point pos;
     private final boolean hasFood;
@@ -29,12 +32,12 @@ public class AntState implements State {
 
         int unknown = 0;
         int diff = 0;
-        for (int i = 0; i < knownWorld.length; i++) {
-            for (int j = 0; j < knownWorld[i].length; j++) {
-                if(knownWorld[i][j].getType() == CellType.UNKNOWN){
+        for (Cell[] cells : knownWorld) {
+            for (Cell cell : cells) {
+                if (cell.getType() == CellType.UNKNOWN) {
                     unknown += 1;
-                }else{
-                    diff +=1;
+                } else {
+                    diff += 1;
                 }
             }
         }
@@ -62,7 +65,7 @@ public class AntState implements State {
     @Override
     public String toString(){
         return String.format("Pos: %s, hasFood: %b, knownWorld: %s", pos.toString(), hasFood, Arrays.toString(knownWorld));
-}
+    }
 
     //TODO: make this a utility function to generate hash Code based upon 2 prime numbers
     @Override
@@ -88,5 +91,63 @@ public class AntState implements State {
             return true;
         }
         return  super.equals(obj);
+    }
+
+    @Override
+    public JComponent visualize() {
+        return new JScrollPane() {
+            private int cellSize;
+            private final int paneWidth = 500;
+            private final int paneHeight = 500;
+            private Font font;
+            {
+                setPreferredSize(new Dimension(paneWidth, paneHeight));
+                cellSize = (paneWidth- knownWorld.length) /knownWorld.length;
+                font = new Font("plain", Font.BOLD, cellSize);
+                JPanel worldPanel = new JPanel(){
+                    {
+                        setPreferredSize(new Dimension(knownWorld.length * cellSize, knownWorld[0].length * cellSize));
+                        setVisible(true);
+
+                        addMouseWheelListener(e -> {
+                            if(e.getWheelRotation() > 0){
+                                cellSize -= 1;
+                            }else {
+                                cellSize += 1;
+                            }
+                            font = new Font("plain", Font.BOLD, cellSize);
+                            setPreferredSize(new Dimension(knownWorld.length * cellSize, knownWorld[0].length * cellSize));
+                            revalidate();
+                            repaint();
+                        });
+                    }
+
+                    @Override
+                    public void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        for (int i = 0; i < knownWorld.length; i++) {
+                            for (int j = 0; j < knownWorld[0].length; j++) {
+                                g.setColor(Color.BLACK);
+                                g.drawRect(i*cellSize, j*cellSize, cellSize, cellSize);
+                                g.setColor(CellColor.map.get(knownWorld[i][j].getType()));
+                                if(knownWorld[i][j].getFood() > 0){
+                                    g.setColor(Color.YELLOW);
+                                }
+                                g.fillRect(i*cellSize+1, j*cellSize+1, cellSize -1, cellSize-1);
+                            }
+                        }
+                        if(hasFocus()){
+                            g.setColor(Color.RED);
+                        }else {
+                            g.setColor(Color.BLACK);
+                        }
+                        g.setFont(font);
+                        g.drawString("A", pos.x * cellSize, (pos.y + 1) * cellSize);
+                    }
+                };
+                getViewport().add(worldPanel);
+                setVisible(true);
+            }
+        };
     }
 }

@@ -13,6 +13,9 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.jfree/jfreechart
+    // https://mvnrepository.com/artifact/org.knowm.xchart/xchart
+    compile group: 'org.knowm.xchart', name: 'xchart', version: '3.2.2'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compileOnly 'org.projectlombok:lombok:1.18.10'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'

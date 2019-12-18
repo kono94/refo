@@ -32,7 +32,7 @@ public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSp
     }
 
     @Override
-    public int getNumberOfAction(){
+    public int getNumberOfActions(){
         return actions.size();
     }
 }

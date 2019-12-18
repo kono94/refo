@@ -35,19 +35,13 @@ public class AntWorld implements Environment<AntAction>{
 
     private int tick;
     private int maxEpisodeTicks;
-    MainFrame gui;
 
     public AntWorld(int width, int height, double foodDensity){
         grid = new Grid(width, height, foodDensity);
         antAgent = new AntAgent(width, height);
         myAnt = new Ant();
-        gui = new MainFrame(this, antAgent);
         maxEpisodeTicks = 1000;
         reset();
-    }
-
-    public MainFrame getGui(){
-        return gui;
     }
 
     public AntWorld(){
@@ -166,7 +160,6 @@ public class AntWorld implements Environment<AntAction>{
 
 
         StepResultEnvironment result = new StepResultEnvironment(newState, reward, done, info);
-        getGui().update(action, result);
         return result;
     }
 
@@ -216,6 +209,6 @@ public class AntWorld implements Environment<AntAction>{
                 new AntWorld(3, 3, 0.1),
                 new ListDiscreteActionSpace<>(AntAction.values())
         );
-        monteCarlo.learn(20000,5);
+        monteCarlo.learn(20000);
     }
 }
