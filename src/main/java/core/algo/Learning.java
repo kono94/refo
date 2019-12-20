@@ -9,8 +9,6 @@ import core.policy.Policy;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +64,12 @@ public abstract class Learning<A extends Enum> {
     protected void dispatchEpisodeStart(){
         for(LearningListener l: learningListeners){
             l.onEpisodeStart();
+        }
+    }
+
+    protected void dispatchStepEnd(){
+        for(LearningListener l: learningListeners){
+            l.onStepEnd();
         }
     }
 }

@@ -1,14 +1,15 @@
 package evironment.antGame;
 
-import core.*;
-import core.algo.Learning;
-import core.algo.mc.MonteCarloOnPolicyEGreedy;
-import evironment.antGame.gui.MainFrame;
+import core.Environment;
+import core.State;
+import core.StepResultEnvironment;
+import core.gui.Visualizable;
+import evironment.antGame.gui.AntWorldComponent;
 
-
+import javax.swing.*;
 import java.awt.*;
 
-public class AntWorld implements Environment<AntAction>{
+public class AntWorld implements Environment<AntAction>, Visualizable {
     /**
      *
      */
@@ -204,14 +205,8 @@ public class AntWorld implements Environment<AntAction>{
         return myAnt;
     }
 
-    public static void main(String[] args) {
-        RNG.setSeed(1993);
-
-        Learning<AntAction> monteCarlo = new MonteCarloOnPolicyEGreedy<>(
-                new AntWorld(3, 3, 0.1),
-                new ListDiscreteActionSpace<>(AntAction.values()),
-                5
-        );
-        monteCarlo.learn(20000);
+    @Override
+    public JComponent visualize() {
+        return new AntWorldComponent(this, this.antAgent);
     }
 }

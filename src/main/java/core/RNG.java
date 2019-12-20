@@ -13,10 +13,6 @@ public class RNG {
         return rng;
     }
 
-    public static void reseed(){
-        rng.setSeed(seed);
-    }
-
     public static void setSeed(int seed){
         RNG.seed = seed;
         rng.setSeed(seed);

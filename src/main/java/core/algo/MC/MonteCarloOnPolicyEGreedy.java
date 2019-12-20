@@ -1,10 +1,9 @@
 package core.algo.mc;
 
 import core.*;
-import core.algo.Learning;
+import core.algo.EpisodicLearning;
 import core.policy.EpsilonGreedyPolicy;
 import javafx.util.Pair;
-import lombok.Setter;
 
 import java.util.*;
 
@@ -26,11 +25,11 @@ import java.util.*;
  * How to encounter this problem?
  * @param <A>
  */
-public class MonteCarloOnPolicyEGreedy<A extends Enum> extends Learning<A> {
+public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<A> {
 
     public MonteCarloOnPolicyEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
         super(environment, actionSpace, discountFactor, delay);
-
+        currentEpisode = 0;
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
         this.stateActionTable = new StateActionHashTable<>(this.actionSpace);
     }
@@ -47,8 +46,15 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends Learning<A> {
         Map<Pair<State, A>, Integer> returnCount = new HashMap<>();
 
         for(int i = 0; i < nrOfEpisodes; ++i) {
+            ++currentEpisode;
             List<StepResult<A>> episode = new ArrayList<>();
             State state = environment.reset();
+            dispatchEpisodeStart();
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             double sumOfRewards = 0;
             for(int j=0; j < 10; ++j){
                 Map<A, Double> actionValues = stateActionTable.getActionValues(state);
@@ -67,6 +73,7 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends Learning<A> {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                dispatchStepEnd();
             }
 
             dispatchEpisodeEnd(sumOfRewards);
@@ -99,5 +106,10 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends Learning<A> {
                 stateActionTable.setValue(stateActionPair.getKey(), stateActionPair.getValue(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
             }
         }
+    }
+
+    @Override
+    public int getCurrentEpisode() {
+        return currentEpisode;
     }
 }

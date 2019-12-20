@@ -7,11 +7,12 @@ import core.algo.Learning;
 import core.algo.Method;
 import core.algo.mc.MonteCarloOnPolicyEGreedy;
 import core.gui.View;
+import core.listener.ViewListener;
 import core.policy.EpsilonPolicy;
 
 import javax.swing.*;
 
-public class RLController<A extends Enum> implements ViewListener{
+public class RLController<A extends Enum> implements ViewListener {
     protected Environment<A> environment;
     protected Learning<A> learning;
     protected DiscreteActionSpace<A> discreteActionSpace;
@@ -19,6 +20,7 @@ public class RLController<A extends Enum> implements ViewListener{
     private int delay;
     private int nrOfEpisodes;
     private Method method;
+    private int prevDelay;
 
     public RLController(){
     }
@@ -41,7 +43,7 @@ public class RLController<A extends Enum> implements ViewListener{
          not using SwingUtilities here on purpose to ensure the view is fully
          initialized and can be passed as LearningListener.
          */
-        view = new View<>(learning, this);
+        view = new View<>(learning, environment, this);
         learning.addListener(view);
         learning.learn(nrOfEpisodes);
     }
@@ -58,10 +60,23 @@ public class RLController<A extends Enum> implements ViewListener{
 
     @Override
     public void onDelayChange(int delay) {
+        changeLearningDelay(delay);
+    }
+
+    private void changeLearningDelay(int delay){
         learning.setDelay(delay);
-        SwingUtilities.invokeLater(() -> {
-            view.updateLearningInfoPanel();
-        });
+        SwingUtilities.invokeLater(() -> view.updateLearningInfoPanel());
+    }
+
+    @Override
+    public void onFastLearnChange(boolean fastLearn) {
+        view.setDrawEveryStep(!fastLearn);
+        if(fastLearn){
+            prevDelay = learning.getDelay();
+            changeLearningDelay(0);
+        }else{
+            changeLearningDelay(prevDelay);
+        }
     }
 
     public RLController<A> setMethod(Method method){
