@@ -7,6 +7,7 @@ public class RandomPolicy<A extends Enum> implements Policy<A>{
     @Override
     public A chooseAction(Map<A, Double> actionValues) {
         int idx = RNG.getRandom().nextInt(actionValues.size());
+        System.out.println("selected action " + idx);
         int i = 0;
         for(A action : actionValues.keySet()){
             if(i++ == idx) return action;

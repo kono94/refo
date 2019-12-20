@@ -1,6 +1,8 @@
 package core.listener;
 
+import java.util.List;
+
 public interface LearningListener{
-    void onEpisodeEnd(double sumOfRewards);
+    void onEpisodeEnd(List<Double> rewardHistory);
     void onEpisodeStart();
 }

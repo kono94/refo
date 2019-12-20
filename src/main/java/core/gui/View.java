@@ -23,12 +23,10 @@ public class View<A extends Enum> implements LearningListener {
     private JFrame mainFrame;
     private XChartPanel<XYChart> rewardChartPanel;
     private ViewListener viewListener;
-    private List<Double> rewardHistory;
 
     public View(Learning<A> learning, ViewListener viewListener){
         this.learning = learning;
         this.viewListener = viewListener;
-        rewardHistory = new ArrayList<>();
         this.initMainFrame();
     }
 
@@ -78,8 +76,7 @@ public class View<A extends Enum> implements LearningListener {
         };
     }
 
-    public void updateRewardGraph(double recentReward){
-        rewardHistory.add(recentReward);
+    public void updateRewardGraph(List<Double> rewardHistory){
         chart.updateXYSeries("randomWalk", null, rewardHistory, null);
         rewardChartPanel.revalidate();
         rewardChartPanel.repaint();
@@ -89,10 +86,11 @@ public class View<A extends Enum> implements LearningListener {
         this.learningInfoPanel.refreshLabels();
     }
 
-
     @Override
-    public void onEpisodeEnd(double sumOfRewards) {
-        SwingUtilities.invokeLater(()->updateRewardGraph(sumOfRewards));
+    public void onEpisodeEnd(List<Double> rewardHistory) {
+        SwingUtilities.invokeLater(()->{
+            updateRewardGraph(rewardHistory);
+        });
     }
 
     @Override

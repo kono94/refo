@@ -151,9 +151,12 @@ public class AntWorld implements Environment<AntAction>{
             done = grid.isAllFoodCollected();
         }
 
+
+        /*
         if(!done){
             reward = -1;
         }
+        */
         if(++tick == maxEpisodeTicks){
             done = true;
         }
@@ -172,8 +175,7 @@ public class AntWorld implements Environment<AntAction>{
     }
 
     public State reset() {
-        RNG.reseed();
-        grid.initRandomWorld();
+        grid.resetWorld();
         antAgent.initUnknownWorld();
         tick = 0;
         myAnt.getPos().setLocation(grid.getStartPoint());
@@ -207,7 +209,8 @@ public class AntWorld implements Environment<AntAction>{
 
         Learning<AntAction> monteCarlo = new MonteCarloOnPolicyEGreedy<>(
                 new AntWorld(3, 3, 0.1),
-                new ListDiscreteActionSpace<>(AntAction.values())
+                new ListDiscreteActionSpace<>(AntAction.values()),
+                5
         );
         monteCarlo.learn(20000);
     }

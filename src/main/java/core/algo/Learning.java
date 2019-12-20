@@ -10,8 +10,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
 public abstract class Learning<A extends Enum> {
@@ -20,28 +23,32 @@ public abstract class Learning<A extends Enum> {
     protected StateActionTable<A> stateActionTable;
     protected Environment<A> environment;
     protected float discountFactor;
-    @Setter
-    protected float epsilon;
     protected Set<LearningListener> learningListeners;
     @Setter
     protected int delay;
+    private List<Double> rewardHistory;
 
-    public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay){
+    public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, int delay){
         this.environment = environment;
         this.actionSpace = actionSpace;
         this.discountFactor = discountFactor;
-        this.epsilon = epsilon;
         this.delay = delay;
         learningListeners = new HashSet<>();
+        rewardHistory = new CopyOnWriteArrayList<>();
     }
 
-    public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon){
-        this(environment, actionSpace, discountFactor, epsilon, LearningConfig.DEFAULT_DELAY);
+    public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor){
+        this(environment, actionSpace, discountFactor, LearningConfig.DEFAULT_DELAY);
+    }
+
+    public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay){
+        this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, delay);
     }
 
     public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace){
-        this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_EPSILON, LearningConfig.DEFAULT_DELAY);
+        this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_DELAY);
     }
+
 
     public abstract void learn(int nrOfEpisodes);
 
@@ -49,9 +56,10 @@ public abstract class Learning<A extends Enum> {
         learningListeners.add(learningListener);
     }
 
-    protected void dispatchEpisodeEnd(double sum){
+    protected void dispatchEpisodeEnd(double recentSumOfRewards){
+        rewardHistory.add(recentSumOfRewards);
         for(LearningListener l: learningListeners) {
-            l.onEpisodeEnd(sum);
+            l.onEpisodeEnd(rewardHistory);
         }
     }
 

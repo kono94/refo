@@ -20,13 +20,13 @@ public class AntState implements State, Visualizable {
     private final int computedHash;
 
     public AntState(Cell[][] knownWorld, Point antPosition, boolean hasFood){
-        this.knownWorld = deepCopyCellGrid(knownWorld);
+        this.knownWorld = Util.deepCopyCellGrid(knownWorld);
         this.pos = deepCopyAntPosition(antPosition);
         this.hasFood = hasFood;
         computedHash = computeHash();
     }
 
-    private int computeHash(){
+    private int computeHash() {
         int hash = 7;
         int prime = 31;
 
@@ -43,19 +43,9 @@ public class AntState implements State, Visualizable {
         }
         hash = prime * hash + unknown;
         hash = prime * hash * diff;
-        hash = prime * hash + (hasFood ? 1:0);
+        hash = prime * hash + (hasFood ? 1 : 0);
         hash = prime * hash + pos.hashCode();
         return hash;
-    }
-    private Cell[][] deepCopyCellGrid(Cell[][] toCopy){
-        Cell[][] cells = new Cell[toCopy.length][toCopy[0].length];
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                // calling copy constructor of Cell class
-                cells[i][j] = new Cell(toCopy[i][j]);
-            }
-        }
-        return cells;
     }
 
     private Point deepCopyAntPosition(Point toCopy){

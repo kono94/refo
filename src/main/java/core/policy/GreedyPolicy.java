@@ -1,7 +1,5 @@
 package core.policy;
 
-import core.RNG;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +11,7 @@ public class GreedyPolicy<A extends Enum> implements Policy<A> {
     public A chooseAction(Map<A, Double> actionValues) {
         if(actionValues.size() == 0) throw new RuntimeException("Empty actionActionValues set");
 
-       Double highestValueAction = null;
+        Double highestValueAction = null;
 
         List<A> equalHigh = new ArrayList<>();
 

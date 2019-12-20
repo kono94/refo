@@ -4,6 +4,8 @@ import core.*;
 import core.algo.Learning;
 import core.policy.EpsilonGreedyPolicy;
 import javafx.util.Pair;
+import lombok.Setter;
+
 import java.util.*;
 
 /**
@@ -26,12 +28,17 @@ import java.util.*;
  */
 public class MonteCarloOnPolicyEGreedy<A extends Enum> extends Learning<A> {
 
-    public MonteCarloOnPolicyEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace) {
-        super(environment, actionSpace);
-        discountFactor = 1f;
-        this.policy = new EpsilonGreedyPolicy<>(0.1f);
-        this.stateActionTable = new StateActionHashTable<>(actionSpace);
+    public MonteCarloOnPolicyEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
+        super(environment, actionSpace, discountFactor, delay);
+
+        this.policy = new EpsilonGreedyPolicy<>(epsilon);
+        this.stateActionTable = new StateActionHashTable<>(this.actionSpace);
     }
+
+    public MonteCarloOnPolicyEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
+        this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_EPSILON, delay);
+    }
+
 
     @Override
     public void learn(int nrOfEpisodes) {

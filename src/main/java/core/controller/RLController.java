@@ -7,9 +7,9 @@ import core.algo.Learning;
 import core.algo.Method;
 import core.algo.mc.MonteCarloOnPolicyEGreedy;
 import core.gui.View;
+import core.policy.EpsilonPolicy;
 
 import javax.swing.*;
-import java.util.Optional;
 
 public class RLController<A extends Enum> implements ViewListener{
     protected Environment<A> environment;
@@ -30,28 +30,38 @@ public class RLController<A extends Enum> implements ViewListener{
 
         switch (method){
             case MC_ONPOLICY_EGREEDY:
-                learning = new MonteCarloOnPolicyEGreedy<>(environment, discreteActionSpace);
+                learning = new MonteCarloOnPolicyEGreedy<>(environment, discreteActionSpace, delay);
                 break;
             case TD_ONPOLICY:
                 break;
             default:
                 throw new RuntimeException("Undefined method");
         }
-        SwingUtilities.invokeLater(() ->{
-            view = new View<>(learning, this);
-            learning.addListener(view);
-        });
+        /*
+         not using SwingUtilities here on purpose to ensure the view is fully
+         initialized and can be passed as LearningListener.
+         */
+        view = new View<>(learning, this);
+        learning.addListener(view);
         learning.learn(nrOfEpisodes);
     }
-    
+
     @Override
     public void onEpsilonChange(float epsilon) {
-        learning.setEpsilon(epsilon);
-        SwingUtilities.invokeLater(() -> view.updateLearningInfoPanel());
+        if(learning.getPolicy() instanceof EpsilonPolicy){
+            ((EpsilonPolicy<A>) learning.getPolicy()).setEpsilon(epsilon);
+            SwingUtilities.invokeLater(() -> view.updateLearningInfoPanel());
+        }else{
+            System.out.println("Trying to call inEpsilonChange on non-epsilon policy");
+        }
     }
 
     @Override
     public void onDelayChange(int delay) {
+        learning.setDelay(delay);
+        SwingUtilities.invokeLater(() -> {
+            view.updateLearningInfoPanel();
+        });
     }
 
     public RLController<A> setMethod(Method method){

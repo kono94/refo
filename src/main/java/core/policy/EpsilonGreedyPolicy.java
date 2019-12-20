@@ -1,6 +1,8 @@
 package core.policy;
 
 import core.RNG;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
@@ -12,7 +14,9 @@ import java.util.Map;
  *
  * @param <A> Discrete Action Enum
  */
-public class EpsilonGreedyPolicy<A extends Enum> implements Policy<A>{
+public class EpsilonGreedyPolicy<A extends Enum> implements EpsilonPolicy<A>{
+    @Setter
+    @Getter
     private float epsilon;
     private RandomPolicy<A> randomPolicy;
     private GreedyPolicy<A> greedyPolicy;
@@ -22,8 +26,10 @@ public class EpsilonGreedyPolicy<A extends Enum> implements Policy<A>{
         randomPolicy = new RandomPolicy<>();
         greedyPolicy = new GreedyPolicy<>();
     }
+
     @Override
     public A chooseAction(Map<A, Double> actionValues) {
+        System.out.println("current epsilon " + epsilon);
         if(RNG.getRandom().nextFloat() < epsilon){
             // Take random action
             return randomPolicy.chooseAction(actionValues);

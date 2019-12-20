@@ -10,31 +10,37 @@ public class Grid {
     private double foodDensity;
     private Point start;
     private Cell[][] grid;
+    private Cell[][] initialGrid;
 
     public Grid(int width, int height, double foodDensity){
         this.width = width;
         this.height = height;
         this.foodDensity = foodDensity;
-
         grid = new Cell[width][height];
+        initialGrid = new Cell[width][height];
+        initRandomWorld();
     }
 
     public Grid(int width, int height){
         this(width, height, 0);
     }
 
+    public void resetWorld(){
+        grid = Util.deepCopyCellGrid(initialGrid);
+    }
+
     public void initRandomWorld(){
         for(int x = 0; x < width; ++x){
             for(int y = 0; y < height; ++y){
                 if( RNG.getRandom().nextDouble() < foodDensity){
-                    grid[x][y] = new Cell(new Point(x,y), CellType.FREE, 1);
+                    initialGrid[x][y] = new Cell(new Point(x,y), CellType.FREE, 1);
                 }else{
-                    grid[x][y] = new Cell(new Point(x,y), CellType.FREE);
+                    initialGrid[x][y] = new Cell(new Point(x,y), CellType.FREE);
                 }
             }
         }
         start = new Point(RNG.getRandom().nextInt(width), RNG.getRandom().nextInt(height));
-        grid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
+        initialGrid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
     }
 
     public Point getStartPoint(){
