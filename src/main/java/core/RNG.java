@@ -1,12 +1,14 @@
 package core;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class RNG {
-    private static Random rng;
+    private static SecureRandom rng;
     private static int seed = 123;
     static {
-        rng = new Random(seed);
+        rng = new SecureRandom();
+        rng.setSeed(seed);
     }
 
     public static Random getRandom() {

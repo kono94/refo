@@ -35,7 +35,7 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
         super(environment, actionSpace, discountFactor, delay);
         currentEpisode = 0;
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
-        this.stateActionTable = new StateActionHashTable<>(this.actionSpace);
+        this.stateActionTable = new DeterministicStateActionTable<>(this.actionSpace);
         returnSum = new HashMap<>();
         returnCount = new HashMap<>();
     }
@@ -57,15 +57,14 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
             e.printStackTrace();
         }
         double sumOfRewards = 0;
-        for (int j = 0; j < 10; ++j) {
+        StepResultEnvironment envResult = null;
+        while(envResult == null || !envResult.isDone()){
             Map<A, Double> actionValues = stateActionTable.getActionValues(state);
             A chosenAction = policy.chooseAction(actionValues);
-            StepResultEnvironment envResult = environment.step(chosenAction);
+            envResult = environment.step(chosenAction);
             State nextState = envResult.getState();
             sumOfRewards += envResult.getReward();
             episode.add(new StepResult<>(state, chosenAction, envResult.getReward()));
-
-            if (envResult.isDone()) break;
 
             state = nextState;
 
@@ -78,13 +77,13 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
         }
 
         dispatchEpisodeEnd(sumOfRewards);
-        System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
-        Set<Pair<State, A>> stateActionPairs = new HashSet<>();
+      //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
+        Set<Pair<State, A>> stateActionPairs = new LinkedHashSet<>();
 
         for (StepResult<A> sr : episode) {
             stateActionPairs.add(new Pair<>(sr.getState(), sr.getAction()));
         }
-        System.out.println("stateActionPairs " + stateActionPairs.size());
+        //System.out.println("stateActionPairs " + stateActionPairs.size());
         for (Pair<State, A> stateActionPair : stateActionPairs) {
             int firstOccurenceIndex = 0;
             // find first occurance of state action pair

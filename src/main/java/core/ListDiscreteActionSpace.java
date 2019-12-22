@@ -1,10 +1,11 @@
 package core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSpace<A> {
+public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSpace<A>, Serializable {
     private List<A> actions;
 
     public ListDiscreteActionSpace(){

@@ -11,6 +11,8 @@ import org.knowm.xchart.XYChart;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,6 +28,8 @@ public class View<A extends Enum> implements LearningView{
     private JFrame environmentFrame;
     private XChartPanel<XYChart> rewardChartPanel;
     private ViewListener viewListener;
+    private JMenuBar menuBar;
+    private JMenu fileMenu;
 
     public View(Learning<A> learning, Environment<A> environment, ViewListener viewListener) {
         this.learning = learning;
@@ -38,7 +42,32 @@ public class View<A extends Enum> implements LearningView{
         mainFrame = new JFrame();
         mainFrame.setPreferredSize(new Dimension(1280, 720));
         mainFrame.setLayout(new BorderLayout());
+        menuBar = new JMenuBar();
+        fileMenu = new JMenu("File");
+        menuBar.add(fileMenu);
+        fileMenu.add(new JMenuItem(new AbstractAction("Load") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final JFileChooser fc = new JFileChooser();
+                fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
+                int returnVal = fc.showOpenDialog(mainFrame);
 
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    viewListener.onLoadState(fc.getSelectedFile().toString());
+                }
+            }
+        }));
+
+        fileMenu.add(new JMenuItem(new AbstractAction("Save") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String fileName = JOptionPane.showInputDialog("Enter file name", "save");
+                if(fileName != null){
+                    viewListener.onSaveState(fileName);
+                }
+            }
+        }));
+        mainFrame.setJMenuBar(menuBar);
         initLearningInfoPanel();
         initRewardChart();
 

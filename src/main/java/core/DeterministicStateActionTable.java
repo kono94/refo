@@ -1,20 +1,19 @@
 package core;
 
-import evironment.antGame.AntAction;
-
-import java.util.HashMap;
+import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Premise: All states have the complete action space
  */
-public class StateActionHashTable<A extends Enum> implements StateActionTable<A> {
+public class DeterministicStateActionTable<A extends Enum> implements StateActionTable<A>, Serializable {
 
     private final Map<State, Map<A, Double>> table;
     private DiscreteActionSpace<A> discreteActionSpace;
 
-    public StateActionHashTable(DiscreteActionSpace<A> discreteActionSpace){
-        table =  new HashMap<>();
+    public DeterministicStateActionTable(DiscreteActionSpace<A> discreteActionSpace){
+        table =  new LinkedHashMap<>();
         this.discreteActionSpace = discreteActionSpace;
     }
 
@@ -61,19 +60,15 @@ public class StateActionHashTable<A extends Enum> implements StateActionTable<A>
         return table.get(state);
     }
 
-    public static void main(String[] args) {
-        DiscreteActionSpace<AntAction> da = new ListDiscreteActionSpace<>(AntAction.MOVE_RIGHT, AntAction.PICK_UP);
-        StateActionTable sat = new StateActionHashTable<>(da);
-        State t = new State() {
-        };
-
-        System.out.println(sat.getActionValues(t));
-    }
     private Map<A, Double> createDefaultActionValues(){
-        final Map<A, Double> defaultActionValues = new HashMap<>();
+        final Map<A, Double> defaultActionValues = new LinkedHashMap<>();
         for(A action: discreteActionSpace.getAllActions()){
             defaultActionValues.put(action, DEFAULT_VALUE);
         }
         return defaultActionValues;
+    }
+    @Override
+    public int getStateCount(){
+        return table.size();
     }
 }

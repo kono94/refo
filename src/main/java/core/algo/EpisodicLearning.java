@@ -3,13 +3,17 @@ package core.algo;
 import core.DiscreteActionSpace;
 import core.Environment;
 import core.listener.LearningListener;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class EpisodicLearning<A extends Enum> extends Learning<A> implements Episodic{
+public abstract class EpisodicLearning<A extends Enum> extends Learning<A> implements Episodic {
+    @Setter
+    @Getter
     protected int currentEpisode;
     protected int episodesToLearn;
     protected volatile int episodePerSecond;
     protected int episodeSumCurrentSecond;
-    private volatile boolean meseaureEpisodeBenchMark;
+    private volatile boolean measureEpisodeBenchMark;
 
     public EpisodicLearning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, int delay) {
         super(environment, actionSpace, discountFactor, delay);
@@ -29,6 +33,9 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     protected void dispatchEpisodeEnd(double recentSumOfRewards){
         ++episodeSumCurrentSecond;
+        if(rewardHistory.size() > 10000){
+            rewardHistory.clear();
+        }
         rewardHistory.add(recentSumOfRewards);
         for(LearningListener l: learningListeners) {
             l.onEpisodeEnd(rewardHistory);
@@ -47,9 +54,9 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     }
 
     public void learn(int nrOfEpisodes){
-        meseaureEpisodeBenchMark = true;
+        measureEpisodeBenchMark = true;
         new Thread(()->{
-            while(meseaureEpisodeBenchMark){
+            while(measureEpisodeBenchMark){
                 episodePerSecond = episodeSumCurrentSecond;
                 episodeSumCurrentSecond = 0;
                 try {
@@ -65,7 +72,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
             nextEpisode();
         }
         dispatchLearningEnd();
-        meseaureEpisodeBenchMark = false;
+        measureEpisodeBenchMark = false;
     }
 
     protected abstract void nextEpisode();

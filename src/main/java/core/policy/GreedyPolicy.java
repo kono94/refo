@@ -1,9 +1,10 @@
 package core.policy;
 
+import core.RNG;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class GreedyPolicy<A extends Enum> implements Policy<A> {
 
@@ -26,6 +27,6 @@ public class GreedyPolicy<A extends Enum> implements Policy<A> {
             }
         }
 
-        return equalHigh.get(new Random().nextInt(equalHigh.size()));
+        return equalHigh.get(RNG.getRandom().nextInt(equalHigh.size()));
     }
 }

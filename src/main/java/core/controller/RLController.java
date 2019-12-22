@@ -1,8 +1,6 @@
 package core.controller;
 
-import core.DiscreteActionSpace;
-import core.Environment;
-import core.ListDiscreteActionSpace;
+import core.*;
 import core.algo.EpisodicLearning;
 import core.algo.Learning;
 import core.algo.Method;
@@ -14,6 +12,7 @@ import core.listener.ViewListener;
 import core.policy.EpsilonPolicy;
 
 import javax.swing.*;
+import java.io.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,10 +22,12 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
     protected Learning<A> learning;
     protected DiscreteActionSpace<A> discreteActionSpace;
     protected LearningView learningView;
-    private int delay;
     private int nrOfEpisodes;
     private Method method;
     private int prevDelay;
+    private int delay = LearningConfig.DEFAULT_DELAY;
+    private float discountFactor = LearningConfig.DEFAULT_DISCOUNT_FACTOR;
+    private float epsilon = LearningConfig.DEFAULT_EPSILON;
     private boolean fastLearning;
     private boolean currentlyLearning;
     private ExecutorService learningExecutor;
@@ -36,6 +37,7 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
         learningExecutor = Executors.newSingleThreadExecutor();
     }
 
+
     public void start(){
         if(environment == null || discreteActionSpace == null || method == null){
             throw new RuntimeException("Set environment, discreteActionSpace and method before calling .start()");
@@ -43,7 +45,7 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
 
         switch (method){
             case MC_ONPOLICY_EGREEDY:
-                learning = new MonteCarloOnPolicyEGreedy<>(environment, discreteActionSpace, delay);
+                learning = new MonteCarloOnPolicyEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
                 break;
             case TD_ONPOLICY:
                 break;
@@ -73,6 +75,44 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
             }else{
                 throw new RuntimeException("Triggering onLearnMoreEpisodes on non-episodic learning!");
             }
+        }
+    }
+
+    @Override
+    public void onLoadState(String fileName) {
+        FileInputStream fis;
+        ObjectInput in;
+        try {
+            fis = new FileInputStream(fileName);
+            in = new ObjectInputStream(fis);
+            SaveState<A>  saveState = (SaveState<A>) in.readObject();
+            learning.setStateActionTable(saveState.getStateActionTable());
+            if(learning instanceof EpisodicLearning){
+                ((EpisodicLearning) learning).setCurrentEpisode(saveState.getCurrentEpisode());
+            }
+            in.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSaveState(String fileName) {
+        FileOutputStream fos;
+        ObjectOutputStream out;
+        try{
+            fos = new FileOutputStream(fileName);
+            out = new ObjectOutputStream(fos);
+            int currentEpisode;
+            if(learning instanceof EpisodicLearning){
+                currentEpisode = ((EpisodicLearning) learning).getCurrentEpisode();
+            }else{
+                currentEpisode = 0;
+            }
+            out.writeObject(new SaveState<>(learning.getStateActionTable(), currentEpisode));
+            out.close();
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 
@@ -167,6 +207,15 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
 
     public RLController<A> setEpisodes(int nrOfEpisodes){
         this.nrOfEpisodes = nrOfEpisodes;
+        return this;
+    }
+
+    public RLController<A> setDiscountFactor(float discountFactor){
+        this.discountFactor = discountFactor;
+        return this;
+    }
+    public RLController<A> setEpsilon(float epsilon){
+        this.epsilon = epsilon;
         return this;
     }
 }

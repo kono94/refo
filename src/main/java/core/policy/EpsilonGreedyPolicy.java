@@ -29,7 +29,8 @@ public class EpsilonGreedyPolicy<A extends Enum> implements EpsilonPolicy<A>{
 
     @Override
     public A chooseAction(Map<A, Double> actionValues) {
-        if(RNG.getRandom().nextFloat() < epsilon){
+        float f = RNG.getRandom().nextFloat();
+        if(f < epsilon){
             // Take random action
             return randomPolicy.chooseAction(actionValues);
         }else{
