@@ -14,7 +14,7 @@ public class RunningAnt {
                             .setEnvironment(new AntWorld(3,3,0.1))
                             .setAllowedActions(AntAction.values())
                             .setMethod(Method.MC_ONPOLICY_EGREEDY)
-                            .setDelay(10)
+                            .setDelay(200)
                             .setEpisodes(100000);
         rl.start();
     }

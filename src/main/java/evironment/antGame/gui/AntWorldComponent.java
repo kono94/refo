@@ -8,14 +8,12 @@ import java.awt.*;
 
 public class AntWorldComponent extends JComponent {
     private AntWorld antWorld;
-    private HistoryPanel historyPanel;
 
     public AntWorldComponent(AntWorld antWorld, AntAgent antAgent){
         this.antWorld = antWorld;
         setLayout(new BorderLayout());
         CellsScrollPane worldPane = new CellsScrollPane(antWorld.getCellArray(), antWorld.getAnt(), 10);
         CellsScrollPane antBrainPane = new CellsScrollPane(antAgent.getKnownWorld(), antWorld.getAnt(), 10);
-        historyPanel = new HistoryPanel();
 
         JComponent mapComponent = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -23,9 +21,7 @@ public class AntWorldComponent extends JComponent {
         mapComponent.setLayout(flowLayout);
         mapComponent.add(worldPane);
         mapComponent.add(antBrainPane);
-
         add(BorderLayout.CENTER, mapComponent);
-        add(BorderLayout.SOUTH, historyPanel);
         setVisible(true);
     }
 

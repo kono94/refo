@@ -3,7 +3,7 @@ package core.gui;
 import core.Environment;
 import core.algo.Learning;
 import core.listener.ViewListener;
-import core.listener.LearningListener;
+import javafx.util.Pair;
 import lombok.Getter;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.XChartPanel;
@@ -12,8 +12,9 @@ import org.knowm.xchart.XYChart;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class View<A extends Enum> implements LearningListener {
+public class View<A extends Enum> implements LearningView{
     private Learning<A> learning;
     private Environment<A> environment;
     @Getter
@@ -25,14 +26,12 @@ public class View<A extends Enum> implements LearningListener {
     private JFrame environmentFrame;
     private XChartPanel<XYChart> rewardChartPanel;
     private ViewListener viewListener;
-    private boolean drawEveryStep;
 
     public View(Learning<A> learning, Environment<A> environment, ViewListener viewListener) {
         this.learning = learning;
         this.environment = environment;
         this.viewListener = viewListener;
-        drawEveryStep = true;
-        SwingUtilities.invokeLater(this::initMainFrame);
+        initMainFrame();
     }
 
     private void initMainFrame() {
@@ -92,46 +91,62 @@ public class View<A extends Enum> implements LearningListener {
         };
     }
 
-    public void setDrawEveryStep(boolean drawEveryStep){
-        this.drawEveryStep = drawEveryStep;
-    }
+    public void updateRewardGraph(final List<Double> rewardHistory) {
+        List<Integer> xValues;
+        List<Double> yValues;
+        if(learningInfoPanel.isLast100Selected()){
+            yValues = new CopyOnWriteArrayList<>(rewardHistory.subList(rewardHistory.size() - Math.min(rewardHistory.size(), 100), rewardHistory.size()));
+            xValues = new CopyOnWriteArrayList<>();
+            for(int i = rewardHistory.size() - Math.min(rewardHistory.size(), 100); i <rewardHistory.size(); ++i){
+                xValues.add(i);
+            }
+        }else{
+            if(learningInfoPanel.isSmoothenGraphSelected()){
+                Pair<List<Integer>, List<Double>> XYvalues = smoothenGraph(rewardHistory);
+                xValues = XYvalues.getKey();
+                yValues = XYvalues.getValue();
+            }else{
+                xValues = null;
+                yValues = rewardHistory;
+            }
+        }
 
-    public void updateRewardGraph(List<Double> rewardHistory) {
-        rewardChart.updateXYSeries("rewardHistory", null, rewardHistory, null);
+        rewardChart.updateXYSeries("rewardHistory", xValues, yValues, null);
         rewardChartPanel.revalidate();
         rewardChartPanel.repaint();
+    }
+
+    private Pair<List<Integer>, List<Double>> smoothenGraph(List<Double> original){
+        int totalXPoints = 100;
+
+        List<Integer> xValues = new CopyOnWriteArrayList<>();
+        List<Double> tmp = new CopyOnWriteArrayList<>();
+        int meanBatch = original.size() / totalXPoints;
+        if(meanBatch < 1){
+            meanBatch = 1;
+        }
+
+        int idx = 0;
+        int batchIdx = 0;
+        double batchSum = 0;
+        for(Double x: original) {
+            ++idx;
+            batchSum += x;
+            if (idx == 1 || ++batchIdx % meanBatch == 0) {
+                tmp.add(batchSum / meanBatch);
+                xValues.add(idx);
+                batchSum = 0;
+            }
+        }
+        return new Pair<>(xValues, tmp);
     }
 
     public void updateLearningInfoPanel() {
         this.learningInfoPanel.refreshLabels();
     }
 
-    @Override
-    public void onEpisodeEnd(List<Double> rewardHistory) {
-            SwingUtilities.invokeLater(() ->{
-                if(drawEveryStep){
-                    updateRewardGraph(rewardHistory);
-                }
-                updateLearningInfoPanel();
-            });
-    }
-
-    @Override
-    public void onEpisodeStart() {
-        if(drawEveryStep) {
-            SwingUtilities.invokeLater(this::repaintEnvironment);
-        }
-    }
-
-    @Override
-    public void onStepEnd() {
-        if(drawEveryStep){
-            SwingUtilities.invokeLater(this::repaintEnvironment);
-        }
-    }
-
-    private void repaintEnvironment(){
-        if (environmentFrame != null) {
+    public void repaintEnvironment(){
+        if (environmentFrame != null && learningInfoPanel.isDrawEnvironmentSelected()) {
             environmentFrame.repaint();
         }
     }

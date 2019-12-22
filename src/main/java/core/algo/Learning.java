@@ -24,7 +24,7 @@ public abstract class Learning<A extends Enum> {
     protected Set<LearningListener> learningListeners;
     @Setter
     protected int delay;
-    private List<Double> rewardHistory;
+    protected List<Double> rewardHistory;
 
     public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, int delay){
         this.environment = environment;
@@ -47,29 +47,27 @@ public abstract class Learning<A extends Enum> {
         this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_DELAY);
     }
 
-
-    public abstract void learn(int nrOfEpisodes);
+    public abstract void learn();
 
     public void addListener(LearningListener learningListener){
         learningListeners.add(learningListener);
     }
 
-    protected void dispatchEpisodeEnd(double recentSumOfRewards){
-        rewardHistory.add(recentSumOfRewards);
-        for(LearningListener l: learningListeners) {
-            l.onEpisodeEnd(rewardHistory);
-        }
-    }
-
-    protected void dispatchEpisodeStart(){
-        for(LearningListener l: learningListeners){
-            l.onEpisodeStart();
-        }
-    }
-
     protected void dispatchStepEnd(){
         for(LearningListener l: learningListeners){
             l.onStepEnd();
+        }
+    }
+
+    protected void dispatchLearningStart(){
+        for(LearningListener l: learningListeners){
+            l.onLearningStart();
+        }
+    }
+
+    protected void dispatchLearningEnd(){
+        for(LearningListener l: learningListeners){
+            l.onLearningEnd();
         }
     }
 }
