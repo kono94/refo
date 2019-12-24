@@ -1,10 +1,7 @@
 package core;
 
-import java.util.List;
-
-public interface DiscreteActionSpace<A extends Enum> {
+public interface DiscreteActionSpace<A extends Enum> extends Iterable<A> {
     int getNumberOfActions();
     void addAction(A a);
     void addActions(A... as);
-    List<A> getAllActions();
 }

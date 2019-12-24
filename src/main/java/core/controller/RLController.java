@@ -18,31 +18,29 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class RLController<A extends Enum> implements ViewListener, LearningListener {
-    protected Environment<A> environment;
-    protected Learning<A> learning;
-    protected DiscreteActionSpace<A> discreteActionSpace;
-    protected LearningView learningView;
-    private int nrOfEpisodes;
+    private Environment<A> environment;
+    private DiscreteActionSpace<A> discreteActionSpace;
     private Method method;
-    private int prevDelay;
     private int delay = LearningConfig.DEFAULT_DELAY;
     private float discountFactor = LearningConfig.DEFAULT_DISCOUNT_FACTOR;
     private float epsilon = LearningConfig.DEFAULT_EPSILON;
-    private boolean fastLearning;
-    private boolean currentlyLearning;
+    private Learning<A> learning;
+    private LearningView learningView;
     private ExecutorService learningExecutor;
+    private boolean currentlyLearning;
+    private boolean fastLearning;
     private List<Double> latestRewardsHistory;
+    private int nrOfEpisodes;
+    private int prevDelay;
 
-    public RLController(){
+    public RLController(Environment<A> env, Method method, A... actions){
         learningExecutor = Executors.newSingleThreadExecutor();
+        setEnvironment(env);
+        setMethod(method);
+        setAllowedActions(actions);
     }
 
-
     public void start(){
-        if(environment == null || discreteActionSpace == null || method == null){
-            throw new RuntimeException("Set environment, discreteActionSpace and method before calling .start()");
-        }
-
         switch (method){
             case MC_ONPOLICY_EGREEDY:
                 learning = new MonteCarloOnPolicyEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
@@ -50,13 +48,21 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
             case TD_ONPOLICY:
                 break;
             default:
-                throw new RuntimeException("Undefined method");
+                throw new IllegalArgumentException("Undefined method");
         }
+
+        initGUI();
+        initLearning();
+    }
+
+    private void initGUI(){
         SwingUtilities.invokeLater(()->{
             learningView = new View<>(learning, environment, this);
             learning.addListener(this);
         });
+    }
 
+    private void initLearning(){
         if(learning instanceof EpisodicLearning){
             learningExecutor.submit(()->((EpisodicLearning) learning).learn(nrOfEpisodes));
         }else{
@@ -65,7 +71,7 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
     }
 
     /*************************************************
-     *                VIEW LISTENERS                 *
+     **                VIEW LISTENERS               **
      *************************************************/
     @Override
     public void onLearnMoreEpisodes(int nrOfEpisodes){
@@ -148,7 +154,7 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
     }
 
     /*************************************************
-     *              LEARNING LISTENERS               *
+     **              LEARNING LISTENERS             **
      *************************************************/
     @Override
     public void onLearningStart() {
@@ -185,37 +191,43 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
     }
 
 
+    /*************************************************
+     **                   SETTER                    **
+     *************************************************/
 
-    public RLController<A> setMethod(Method method){
-        this.method = method;
-        return this;
-    }
-    public RLController<A> setEnvironment(Environment<A> environment){
+    private void setEnvironment(Environment<A> environment){
+        if(environment == null){
+            throw new IllegalArgumentException("Environment cannot be null");
+        }
         this.environment = environment;
-        return this;
     }
-    @SafeVarargs
-    public final RLController<A> setAllowedActions(A... actions){
+
+    private void setMethod(Method method){
+        if(method == null){
+            throw new IllegalArgumentException("Method cannot be null");
+        }
+        this.method = method;
+    }
+
+    private void setAllowedActions(A[] actions){
+        if(actions == null || actions.length == 0){
+            throw new IllegalArgumentException("There has to be at least one action");
+        }
         this.discreteActionSpace = new ListDiscreteActionSpace<>(actions);
-        return this;
     }
 
-    public RLController<A> setDelay(int delay){
+    public void setDelay(int delay){
         this.delay = delay;
-        return this;
     }
 
-    public RLController<A> setEpisodes(int nrOfEpisodes){
+    public void setEpisodes(int nrOfEpisodes){
         this.nrOfEpisodes = nrOfEpisodes;
-        return this;
     }
 
-    public RLController<A> setDiscountFactor(float discountFactor){
+    public void setDiscountFactor(float discountFactor){
         this.discountFactor = discountFactor;
-        return this;
     }
-    public RLController<A> setEpsilon(float epsilon){
+    public void setEpsilon(float epsilon){
         this.epsilon = epsilon;
-        return this;
     }
 }

@@ -9,14 +9,13 @@ import core.policy.Policy;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
-public abstract class Learning<A extends Enum> implements Serializable {
+public abstract class Learning<A extends Enum>{
     protected Policy<A> policy;
     protected DiscreteActionSpace<A> actionSpace;
     @Setter

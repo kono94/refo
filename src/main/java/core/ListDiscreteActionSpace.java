@@ -1,11 +1,10 @@
 package core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSpace<A>, Serializable {
+public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSpace<A>, Serializable{
+    private static final long serialVersionUID = 1L;
     private List<A> actions;
 
     public ListDiscreteActionSpace(){
@@ -28,12 +27,12 @@ public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSp
     }
 
     @Override
-    public List<A> getAllActions() {
-        return actions;
+    public int getNumberOfActions(){
+        return actions.size();
     }
 
     @Override
-    public int getNumberOfActions(){
-        return actions.size();
+    public Iterator<A> iterator() {
+        return actions.iterator();
     }
 }

@@ -62,7 +62,7 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
 
     private Map<A, Double> createDefaultActionValues(){
         final Map<A, Double> defaultActionValues = new LinkedHashMap<>();
-        for(A action: discreteActionSpace.getAllActions()){
+        for(A action: discreteActionSpace){
             defaultActionValues.put(action, DEFAULT_VALUE);
         }
         return defaultActionValues;

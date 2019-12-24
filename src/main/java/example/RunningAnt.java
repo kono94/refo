@@ -10,12 +10,16 @@ public class RunningAnt {
     public static void main(String[] args) {
         RNG.setSeed(123);
 
-        RLController<AntAction> rl = new RLController<AntAction>()
-                            .setEnvironment(new AntWorld(3,3,0.1))
-                            .setAllowedActions(AntAction.values())
-                            .setMethod(Method.MC_ONPOLICY_EGREEDY)
-                            .setDelay(200)
-                            .setEpisodes(100000);
+        RLController<AntAction> rl = new RLController<>(
+                new AntWorld(3, 3, 0.1),
+                Method.MC_ONPOLICY_EGREEDY,
+                AntAction.values());
+
+        rl.setDelay(200);
+        rl.setEpisodes(10000);
+        rl.setDiscountFactor(1f);
+        rl.setEpsilon(0.15f);
+
         rl.start();
     }
 }

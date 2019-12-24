@@ -3,12 +3,10 @@ package core.algo;
 import core.DiscreteActionSpace;
 import core.Environment;
 import core.listener.LearningListener;
-import lombok.Getter;
 import lombok.Setter;
 
 public abstract class EpisodicLearning<A extends Enum> extends Learning<A> implements Episodic {
     @Setter
-    @Getter
     protected int currentEpisode;
     protected int episodesToLearn;
     protected volatile int episodePerSecond;
