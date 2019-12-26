@@ -2,6 +2,12 @@ package core;
 
 import java.util.Map;
 
+/**
+ * Q-Table which saves all seen states, all available actions for each state
+ * and their value (state-action values/ action values).
+ *
+ * @param <A>
+ */
 public interface StateActionTable<A extends Enum> {
     double DEFAULT_VALUE = 0.0;
 

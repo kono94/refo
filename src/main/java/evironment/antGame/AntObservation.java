@@ -1,6 +1,5 @@
 package evironment.antGame;
 
-import core.Observation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import java.awt.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class AntObservation implements Observation {
+public class AntObservation {
       private Cell cell;
       private Point pos;
 

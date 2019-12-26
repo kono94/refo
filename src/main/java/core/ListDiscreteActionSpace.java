@@ -3,6 +3,13 @@ package core;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Implementation of a discrete action space.
+ * "Discrete" because actions are exclusively defined as Enum,
+ * realized as generic "A".
+ *
+ * @param <A> Enum class of actions in the specific environment
+ */
 public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSpace<A>, Serializable{
     private static final long serialVersionUID = 1L;
     private List<A> actions;

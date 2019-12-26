@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ *
+ * @param <A> discrete action type for a specific environment
+ */
 @Getter
 public abstract class Learning<A extends Enum>{
     protected Policy<A> policy;

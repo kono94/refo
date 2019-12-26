@@ -4,6 +4,11 @@ import core.RNG;
 
 import java.util.Map;
 
+/**
+ * Chooses an action arbitrarily.
+ *
+ * @param <A> Enum class of available action in specific environment
+ */
 public class RandomPolicy<A extends Enum> implements Policy<A>{
     @Override
     public A chooseAction(Map<A, Double> actionValues) {

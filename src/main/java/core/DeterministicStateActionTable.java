@@ -17,13 +17,17 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
         this.discreteActionSpace = discreteActionSpace;
     }
 
-    /*
-       If the state is not present in the table at the time of
-       calling this method the DEFAULT_VALUE gets returned BUT
-       no the missing state is not inserted into the table!
-
-       Inserting of missing states is ONLY done in "setValue()"
-       method.
+    /**
+     * If the state is not present in the table at the time of
+     * calling this method the DEFAULT_VALUE gets returned BUT
+     * no the missing state is not inserted into the table!
+     *
+     * Inserting of missing states is ONLY done in "setValue()"
+     * method.
+     *
+     * @param state given state
+     * @param action given action
+     * @return estimate value of state-action pair
      */
     @Override
     public double getValue(State state, A action) {
@@ -34,11 +38,15 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
         return DEFAULT_VALUE;
     }
 
-    /*
-       Update the value of an action for a specific state.
-       If the state is not present in the table yet,
-       it will get stored in combination with every action
-       from the action space initialized with the default value.
+    /**
+     * Update the value of an action for a specific state.
+     * If the state is not present in the table yet,
+     * it will get stored in combination with every action
+     * from the action space initialized with the default value.
+     *
+     * @param state given state
+     * @param action given action
+     * @param value new estimate of the state-action pair
      */
     @Override
     public void setValue(State state, A action, double value) {
@@ -52,6 +60,10 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
         actionValues.put(action, value);
     }
 
+    /**
+     * @param state given state
+     * @return all available action in given state and their corresponding estimated values
+     */
     @Override
     public Map<A, Double> getActionValues(State state) {
         if(table.get(state) == null){
@@ -60,6 +72,9 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
         return table.get(state);
     }
 
+    /**
+     * @return Map with initial values for every available action
+     */
     private Map<A, Double> createDefaultActionValues(){
         final Map<A, Double> defaultActionValues = new LinkedHashMap<>();
         for(A action: discreteActionSpace){

@@ -61,7 +61,7 @@ public class View<A extends Enum> implements LearningView{
         fileMenu.add(new JMenuItem(new AbstractAction("Save") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String fileName = JOptionPane.showInputDialog("Enter file name", "save");
+                String fileName = JOptionPane.showInputDialog("Enter file name", "path/to/file");
                 if(fileName != null){
                     viewListener.onSaveState(fileName);
                 }

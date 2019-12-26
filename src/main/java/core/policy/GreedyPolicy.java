@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Always chooses the action with the highest value
+ * with ties broken arbitrarily.
+ *
+ * @param <A> Enum class of available action in specific environment
+ */
 public class GreedyPolicy<A extends Enum> implements Policy<A> {
 
     @Override
