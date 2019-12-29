@@ -1,3 +1,6 @@
+learningStates/*
+!learningStates/.gitkeep
+
 .idea/refo.iml
 .idea/misc.xml
 .idea/modules.xml

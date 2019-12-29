@@ -14,10 +14,18 @@ import java.awt.*;
 public class DinoWorld implements Environment<DinoAction>, Visualizable {
     private Dino dino;
     private Obstacle currentObstacle;
+    private boolean randomObstacleSpeed;
+    private boolean randomObstacleDistance;
 
-    public DinoWorld(){
+    public DinoWorld(boolean randomObstacleSpeed, boolean randomObstacleDistance){
+        this.randomObstacleSpeed = randomObstacleSpeed;
+        this.randomObstacleDistance = randomObstacleDistance;
         dino = new Dino(Config.DINO_SIZE, Config.DINO_STARTING_X, Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE, 0, 0, Color.GREEN);
         spawnNewObstacle();
+    }
+
+    public DinoWorld(){
+        this(false, false);
     }
 
     private boolean ranIntoObstacle(){
@@ -32,6 +40,7 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
 
         return xAxis && yAxis;
     }
+
     private int getDistanceToObstacle(){
         return currentObstacle.getX() - dino.getX() + Config.DINO_SIZE;
     }
@@ -57,8 +66,27 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
 
         return new StepResultEnvironment(new DinoState(getDistanceToObstacle()), reward, done, "");
     }
+
+
     private void spawnNewObstacle(){
-        currentObstacle = new Obstacle(Config.OBSTACLE_SIZE, Config.FRAME_WIDTH + Config.OBSTACLE_SIZE, Config.FRAME_HEIGHT - Config.GROUND_Y - Config.OBSTACLE_SIZE, -Config.OBSTACLE_SPEED, 0, Color.BLACK);
+        int dx;
+        int xSpawn;
+
+        if(randomObstacleSpeed){
+            dx = -(int)((Math.random() + 0.5) * Config.OBSTACLE_SPEED);
+        }else{
+            dx = -Config.OBSTACLE_SPEED;
+        }
+
+        if(randomObstacleDistance){
+            // randomly spawning more right outside of the screen
+            xSpawn = (int)(Math.random() + 0.5 * Config.FRAME_WIDTH + Config.FRAME_WIDTH  + Config.OBSTACLE_SIZE);
+        }else{
+            // instantly respawning on the left screen border
+            xSpawn = Config.FRAME_WIDTH + Config.OBSTACLE_SIZE;
+        }
+
+        currentObstacle = new Obstacle(Config.OBSTACLE_SIZE, xSpawn, Config.FRAME_HEIGHT - Config.GROUND_Y - Config.OBSTACLE_SIZE, dx, 0, Color.BLACK);
     }
 
     private void spawnDino(){

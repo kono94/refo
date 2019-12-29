@@ -11,7 +11,7 @@ public class JumpingDino {
         RNG.setSeed(55);
 
         RLController<DinoAction> rl = new RLController<>(
-                new DinoWorld(),
+                new DinoWorld(true, true),
                 Method.MC_ONPOLICY_EGREEDY,
                 DinoAction.values());
 

@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class RLController<A extends Enum> implements ViewListener, LearningListener {
+    private final String folderPrefix = "learningStates" + File.separator;
     private Environment<A> environment;
     private DiscreteActionSpace<A> discreteActionSpace;
     private Method method;
@@ -26,15 +27,12 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
     private float epsilon = LearningConfig.DEFAULT_EPSILON;
     private Learning<A> learning;
     private LearningView learningView;
-    private ExecutorService learningExecutor;
-    private boolean currentlyLearning;
     private boolean fastLearning;
     private List<Double> latestRewardsHistory;
     private int nrOfEpisodes;
     private int prevDelay;
 
     public RLController(Environment<A> env, Method method, A... actions){
-        learningExecutor = Executors.newSingleThreadExecutor();
         setEnvironment(env);
         setMethod(method);
         setAllowedActions(actions);
@@ -64,9 +62,9 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
 
     private void initLearning(){
         if(learning instanceof EpisodicLearning){
-            learningExecutor.submit(()->((EpisodicLearning) learning).learn(nrOfEpisodes));
+           ((EpisodicLearning) learning).learn(nrOfEpisodes);
         }else{
-            learningExecutor.submit(()->learning.learn());
+            learning.learn();
         }
     }
 
@@ -75,27 +73,25 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
      *************************************************/
     @Override
     public void onLearnMoreEpisodes(int nrOfEpisodes){
-        if(!currentlyLearning){
-            if(learning instanceof EpisodicLearning){
-                learningExecutor.submit(()->((EpisodicLearning) learning).learn(nrOfEpisodes));
-            }else{
-                throw new RuntimeException("Triggering onLearnMoreEpisodes on non-episodic learning!");
-            }
+        if(learning instanceof EpisodicLearning){
+            ((EpisodicLearning) learning).learn(nrOfEpisodes);
+        }else{
+            throw new RuntimeException("Triggering onLearnMoreEpisodes on non-episodic learning!");
         }
+        learningView.updateLearningInfoPanel();
     }
 
     @Override
     public void onLoadState(String fileName) {
         FileInputStream fis;
-        ObjectInput in;
+        ObjectInputStream in;
         try {
             fis = new FileInputStream(fileName);
             in = new ObjectInputStream(fis);
-            SaveState<A>  saveState = (SaveState<A>) in.readObject();
-            learning.setStateActionTable(saveState.getStateActionTable());
-            if(learning instanceof EpisodicLearning){
-                ((EpisodicLearning) learning).setCurrentEpisode(saveState.getCurrentEpisode());
-            }
+            System.out.println("interrup" + Thread.currentThread().getId());
+            learning.interruptLearning();
+            learning.load(in);
+            SwingUtilities.invokeLater(() -> learningView.updateLearningInfoPanel());
             in.close();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -107,15 +103,10 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
         FileOutputStream fos;
         ObjectOutputStream out;
         try{
-            fos = new FileOutputStream(fileName);
+            fos = new FileOutputStream(folderPrefix +  fileName);
             out = new ObjectOutputStream(fos);
-            int currentEpisode;
-            if(learning instanceof EpisodicLearning){
-                currentEpisode = ((EpisodicLearning) learning).getCurrentEpisode();
-            }else{
-                currentEpisode = 0;
-            }
-            out.writeObject(new SaveState<>(learning.getStateActionTable(), currentEpisode));
+            learning.interruptLearning();
+            learning.save(out);
             out.close();
         }catch (IOException e){
             e.printStackTrace();
@@ -158,13 +149,12 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
      *************************************************/
     @Override
     public void onLearningStart() {
-        currentlyLearning = true;
     }
 
     @Override
     public void onLearningEnd() {
-        currentlyLearning = false;
         SwingUtilities.invokeLater(()-> learningView.updateRewardGraph(latestRewardsHistory));
+        onSaveState( method.toString() + System.currentTimeMillis()/1000 + (learning instanceof EpisodicLearning ? "e " + ((EpisodicLearning) learning).getCurrentEpisode() : ""));
     }
 
     @Override
@@ -192,7 +182,7 @@ public class RLController<A extends Enum> implements ViewListener, LearningListe
 
 
     /*************************************************
-     **                   SETTER                    **
+     **                   SETTERS                   **
      *************************************************/
 
     private void setEnvironment(Environment<A> environment){

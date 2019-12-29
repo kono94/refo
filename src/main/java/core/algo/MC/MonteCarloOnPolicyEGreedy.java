@@ -5,6 +5,9 @@ import core.algo.EpisodicLearning;
 import core.policy.EpsilonGreedyPolicy;
 import javafx.util.Pair;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 /**
@@ -44,19 +47,16 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
         this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_EPSILON, delay);
     }
 
-
     @Override
     public void nextEpisode() {
-        ++currentEpisode;
-        List<StepResult<A>> episode = new ArrayList<>();
+        episode = new ArrayList<>();
         State state = environment.reset();
-        dispatchEpisodeStart();
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        double sumOfRewards = 0;
+        sumOfRewards = 0;
         StepResultEnvironment envResult = null;
         while(envResult == null || !envResult.isDone()){
             Map<A, Double> actionValues = stateActionTable.getActionValues(state);
@@ -76,7 +76,6 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
             dispatchStepEnd();
         }
 
-        dispatchEpisodeEnd(sumOfRewards);
       //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
         Set<Pair<State, A>> stateActionPairs = new LinkedHashSet<>();
 
@@ -114,5 +113,19 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
     @Override
     public int getEpisodesPerSecond(){
         return episodePerSecond;
+    }
+
+    @Override
+    public void save(ObjectOutputStream oos) throws IOException {
+        super.save(oos);
+        oos.writeObject(returnSum);
+        oos.writeObject(returnCount);
+    }
+
+    @Override
+    public void load(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        super.load(ois);
+        returnSum = (Map<Pair<State, A>, Double>) ois.readObject();
+        returnCount = (Map<Pair<State, A>, Integer>) ois.readObject();
     }
 }
