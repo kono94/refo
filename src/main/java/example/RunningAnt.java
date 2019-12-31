@@ -16,7 +16,7 @@ public class RunningAnt {
                 AntAction.values());
 
         rl.setDelay(200);
-        rl.setEpisodes(10000);
+        rl.setNrOfEpisodes(10000);
         rl.setDiscountFactor(1f);
         rl.setEpsilon(0.15f);
 
