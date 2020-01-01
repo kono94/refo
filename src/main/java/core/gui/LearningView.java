@@ -8,5 +8,7 @@ import java.util.List;
 public interface LearningView {
     void repaintEnvironment();
     void updateLearningInfoPanel();
+    void updateQTable();
     void updateRewardGraph(final List<Double> rewardHistory);
+    void showQTableFrame();
 }

@@ -1,6 +1,7 @@
 package core;
 
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * Q-Table which saves all seen states, all available actions for each state
@@ -15,4 +16,6 @@ public interface StateActionTable<A extends Enum> {
     void setValue(State state, A action, double value);
     int getStateCount();
     Map<A, Double> getActionValues(State state);
+
+    Queue<Map.Entry<State, Map<A, Double>>> getFirstStateEntriesForView();
 }

@@ -1,8 +1,8 @@
 package evironment.jumpingDino;
 
 public class Config {
-    public static final int FRAME_WIDTH = 1280;
-    public static final int FRAME_HEIGHT = 720;
+    public static final int FRAME_WIDTH = 800;
+    public static final int FRAME_HEIGHT = 300;
     public static final int GROUND_Y = 50;
     public static final int DINO_STARTING_X = 50;
     public static final int DINO_SIZE = 50;

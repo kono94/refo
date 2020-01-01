@@ -1,14 +1,16 @@
 package core.controller;
 
 import core.Environment;
+import core.algo.EpisodicLearning;
 import core.algo.Method;
 import core.gui.LearningView;
 import core.gui.View;
+import core.listener.ViewListener;
 
 import javax.swing.*;
 import java.util.List;
 
-public class RLControllerGUI<A extends Enum> extends RLController<A> {
+public class RLControllerGUI<A extends Enum> extends RLController<A> implements ViewListener {
     private LearningView learningView;
 
     public RLControllerGUI(Environment<A> env, Method method, A... actions) {
@@ -23,21 +25,41 @@ public class RLControllerGUI<A extends Enum> extends RLController<A> {
         });
     }
 
-    @Override
-    public void onLearnMoreEpisodes(int nrOfEpisodes) {
-        super.onLearnMoreEpisodes(nrOfEpisodes);
-        learningView.updateLearningInfoPanel();
-    }
+    /*************************************************
+     **                View LISTENERS               **
+     *************************************************/
 
     @Override
     public void onLoadState(String fileName) {
-        super.onLoadState(fileName);
+        super.loadState(fileName);
         SwingUtilities.invokeLater(() -> learningView.updateLearningInfoPanel());
     }
 
     @Override
+    public void onSaveState(String fileName) {
+        super.saveState(fileName);
+    }
+
+    @Override
+    public void onShowQTable() {
+        learningView.showQTableFrame();
+    }
+
+    @Override
     public void onEpsilonChange(float epsilon) {
-        super.onEpsilonChange(epsilon);
+        super.changeEpsilon(epsilon);
+        SwingUtilities.invokeLater(() -> learningView.updateLearningInfoPanel());
+    }
+
+    @Override
+    public void onDelayChange(int delay) {
+        super.changeLearningDelay(delay);
+        SwingUtilities.invokeLater(() -> learningView.updateLearningInfoPanel());
+    }
+
+    @Override
+    public void onFastLearnChange(boolean isFastLearn) {
+        super.changeFastLearning(isFastLearn);
         SwingUtilities.invokeLater(() -> learningView.updateLearningInfoPanel());
     }
 
@@ -48,17 +70,23 @@ public class RLControllerGUI<A extends Enum> extends RLController<A> {
     }
 
     @Override
-    public void onLearningEnd() {
-        super.onLearningEnd();
-        SwingUtilities.invokeLater(() -> learningView.updateRewardGraph(latestRewardsHistory));
+    public void onLearnMoreEpisodes(int nrOfEpisodes) {
+        super.learnMoreEpisodes(nrOfEpisodes);
+        learningView.updateLearningInfoPanel();
     }
+
+
+    /*************************************************
+     **              LEARNING LISTENERS             **
+     *************************************************/
 
     @Override
     public void onEpisodeEnd(List<Double> rewardHistory) {
         super.onEpisodeEnd(rewardHistory);
         SwingUtilities.invokeLater(() -> {
-            if (!fastLearning) {
+            if(!fastLearning) {
                 learningView.updateRewardGraph(latestRewardsHistory);
+                learningView.updateQTable();
             }
             learningView.updateLearningInfoPanel();
         });
@@ -66,8 +94,15 @@ public class RLControllerGUI<A extends Enum> extends RLController<A> {
 
     @Override
     public void onStepEnd() {
-        if (!fastLearning) {
+        if(!fastLearning) {
             SwingUtilities.invokeLater(() -> learningView.repaintEnvironment());
         }
+    }
+
+    @Override
+    public void onLearningEnd() {
+        super.onLearningEnd();
+        onSaveState(method.toString() + System.currentTimeMillis() / 1000 + (learning instanceof EpisodicLearning ? "e" + ((EpisodicLearning) learning).getCurrentEpisode() : ""));
+        SwingUtilities.invokeLater(() -> learningView.updateRewardGraph(latestRewardsHistory));
     }
 }

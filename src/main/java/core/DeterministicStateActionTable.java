@@ -1,9 +1,9 @@
 package core;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 /**
  * Premise: All states have the complete action space
  */
@@ -11,10 +11,12 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
 
     private final Map<State, Map<A, Double>> table;
     private DiscreteActionSpace<A> discreteActionSpace;
+    private Queue<Map.Entry<State, Map<A, Double>>> latestChanges;
 
     public DeterministicStateActionTable(DiscreteActionSpace<A> discreteActionSpace){
         table =  new LinkedHashMap<>();
         this.discreteActionSpace = discreteActionSpace;
+        latestChanges = new CircularFifoQueue<>(10);
     }
 
     /**
@@ -57,6 +59,7 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
             actionValues = createDefaultActionValues();
             table.put(state, actionValues);
         }
+        latestChanges.add(new AbstractMap.SimpleEntry<>(state, actionValues));
         actionValues.put(action, value);
     }
 
@@ -70,6 +73,11 @@ public class DeterministicStateActionTable<A extends Enum> implements StateActio
             table.put(state, createDefaultActionValues());
         }
         return table.get(state);
+    }
+
+    @Override
+    public Queue<Map.Entry<State, Map<A, Double>>> getFirstStateEntriesForView() {
+        return latestChanges;
     }
 
     /**

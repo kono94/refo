@@ -16,7 +16,7 @@ public class JumpingDino {
                 Method.MC_ONPOLICY_EGREEDY,
                 DinoAction.values());
 
-        rl.setDelay(0);
+        rl.setDelay(100);
         rl.setDiscountFactor(1f);
         rl.setEpsilon(0.15f);
         rl.setNrOfEpisodes(100000);

@@ -3,7 +3,8 @@ package core.algo.mc;
 import core.*;
 import core.algo.EpisodicLearning;
 import core.policy.EpsilonGreedyPolicy;
-import org.javatuples.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -80,7 +81,7 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
         Set<Pair<State, A>> stateActionPairs = new LinkedHashSet<>();
 
         for (StepResult<A> sr : episode) {
-            stateActionPairs.add(new Pair<>(sr.getState(), sr.getAction()));
+            stateActionPairs.add(new ImmutablePair<>(sr.getState(), sr.getAction()));
         }
 
         //System.out.println("stateActionPairs " + stateActionPairs.size());
@@ -88,7 +89,7 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
             int firstOccurenceIndex = 0;
             // find first occurance of state action pair
             for (StepResult<A> sr : episode) {
-                if (stateActionPair.getValue0().equals(sr.getState()) && stateActionPair.getValue1().equals(sr.getAction())) {
+                if (stateActionPair.getKey().equals(sr.getState()) && stateActionPair.getValue().equals(sr.getAction())) {
                     break;
                 }
                 firstOccurenceIndex++;
@@ -102,7 +103,7 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
             // if the key does not exists, it will create a new entry with G as default value
             returnSum.merge(stateActionPair, G, Double::sum);
             returnCount.merge(stateActionPair, 1, Integer::sum);
-            stateActionTable.setValue(stateActionPair.getValue0(), stateActionPair.getValue1(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
+            stateActionTable.setValue(stateActionPair.getKey(), stateActionPair.getValue(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
         }
     }
 

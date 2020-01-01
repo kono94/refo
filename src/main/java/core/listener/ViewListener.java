@@ -12,4 +12,5 @@ public interface ViewListener {
     void onLearnMoreEpisodes(int nrOfEpisodes);
     void onLoadState(String fileName);
     void onSaveState(String fileName);
+    void onShowQTable();
 }
