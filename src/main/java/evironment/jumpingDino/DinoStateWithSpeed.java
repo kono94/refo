@@ -28,7 +28,7 @@ public class DinoStateWithSpeed extends DinoState{
         DinoStateWithSpeed that = (DinoStateWithSpeed) o;
         return getObstacleSpeed() == that.getObstacleSpeed();
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), getObstacleSpeed());

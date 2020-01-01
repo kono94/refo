@@ -16,12 +16,14 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
     private Obstacle currentObstacle;
     private boolean randomObstacleSpeed;
     private boolean randomObstacleDistance;
+    private DinoWorldComponent comp;
 
     public DinoWorld(boolean randomObstacleSpeed, boolean randomObstacleDistance){
         this.randomObstacleSpeed = randomObstacleSpeed;
         this.randomObstacleDistance = randomObstacleDistance;
         dino = new Dino(Config.DINO_SIZE, Config.DINO_STARTING_X, Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE, 0, 0, Color.GREEN);
         spawnNewObstacle();
+        comp = new DinoWorldComponent(this);
     }
 
     public DinoWorld(){
@@ -54,17 +56,19 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
             dino.jump();
         }
 
-        dino.tick();
-        currentObstacle.tick();
-        if(currentObstacle.getX() < -Config.OBSTACLE_SIZE){
-            spawnNewObstacle();
+        for(int i= 0; i < 5; ++i){
+            dino.tick();
+            currentObstacle.tick();
+            if(currentObstacle.getX() < -Config.OBSTACLE_SIZE){
+                spawnNewObstacle();
+            }
+            comp.repaint();
+            if(ranIntoObstacle()){
+                done = true;
+                break;
+            }
         }
-
-        if(ranIntoObstacle()){
-            done = true;
-        }
-
-        return new StepResultEnvironment(new DinoState(getDistanceToObstacle()), reward, done, "");
+        return new StepResultEnvironment(new DinoStateWithSpeed(getDistanceToObstacle(), getCurrentObstacle().getDx()), reward, done, "");
     }
 
 
@@ -101,6 +105,6 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
 
     @Override
     public JComponent visualize() {
-        return new DinoWorldComponent(this);
+        return comp;
     }
 }
