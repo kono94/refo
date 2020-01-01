@@ -1,11 +1,13 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'net.lwenstrom.jan'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -22,4 +24,18 @@ dependencies {
     // https://mvnrepository.com/artifact/org.javatuples/javatuples
     compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
 
+}
+
+// Include dependent libraries in archive.
+mainClassName = "example.JumpingDino"
+
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
