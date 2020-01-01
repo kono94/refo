@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
@@ -13,20 +14,21 @@ public class DinoState implements State, Serializable {
 
     @Override
     public String toString() {
-        return Integer.toString(xDistanceToObstacle);
+        return "DinoState{" +
+                "xDistanceToObstacle=" + xDistanceToObstacle +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DinoState dinoState = (DinoState) o;
+        return xDistanceToObstacle == dinoState.xDistanceToObstacle;
     }
 
     @Override
     public int hashCode() {
-        return this.xDistanceToObstacle;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof DinoState){
-            DinoState toCompare = (DinoState) obj;
-            return toCompare.getXDistanceToObstacle() == this.xDistanceToObstacle;
-        }
-        return  super.equals(obj);
+        return Objects.hash(xDistanceToObstacle);
     }
 }

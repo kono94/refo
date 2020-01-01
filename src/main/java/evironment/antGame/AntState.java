@@ -65,22 +65,22 @@ public class AntState implements State, Visualizable {
 
     @Override
     public boolean equals(Object obj){
-        if(obj instanceof AntState){
-            AntState toCompare = (AntState) obj;
-            if(!this.pos.equals(toCompare.pos) || !this.hasFood == toCompare.hasFood){
-                return false;
-            }
-            for (int i = 0; i < toCompare.knownWorld.length; i++) {
-                for (int j = 0; j < toCompare.knownWorld[i].length; j++) {
-                    if(!this.knownWorld[i][j].equals(toCompare.knownWorld[i][j])){
-                        return false;
-                    }
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
 
-                }
-            }
-            return true;
+        AntState toCompare = (AntState) obj;
+        if(!this.pos.equals(toCompare.pos) || !this.hasFood == toCompare.hasFood){
+            return false;
         }
-        return  super.equals(obj);
+        for (int i = 0; i < toCompare.knownWorld.length; i++) {
+            for (int j = 0; j < toCompare.knownWorld[i].length; j++) {
+                if(!this.knownWorld[i][j].equals(toCompare.knownWorld[i][j])){
+                    return false;
+                }
+
+            }
+        }
+        return true;
     }
 
     @Override
