@@ -3,8 +3,8 @@ package core.gui;
 import core.Environment;
 import core.algo.Learning;
 import core.listener.ViewListener;
-import javafx.util.Pair;
 import lombok.Getter;
+import org.javatuples.Pair;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
@@ -132,8 +132,8 @@ public class View<A extends Enum> implements LearningView{
         }else{
             if(learningInfoPanel.isSmoothenGraphSelected()){
                 Pair<List<Integer>, List<Double>> XYvalues = smoothenGraph(rewardHistory);
-                xValues = XYvalues.getKey();
-                yValues = XYvalues.getValue();
+                xValues = XYvalues.getValue0();
+                yValues = XYvalues.getValue1();
             }else{
                 xValues = null;
                 yValues = rewardHistory;

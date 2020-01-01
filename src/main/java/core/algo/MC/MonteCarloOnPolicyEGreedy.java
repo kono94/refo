@@ -3,7 +3,7 @@ package core.algo.mc;
 import core.*;
 import core.algo.EpisodicLearning;
 import core.policy.EpsilonGreedyPolicy;
-import javafx.util.Pair;
+import org.javatuples.Pair;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -82,12 +82,13 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
         for (StepResult<A> sr : episode) {
             stateActionPairs.add(new Pair<>(sr.getState(), sr.getAction()));
         }
+
         //System.out.println("stateActionPairs " + stateActionPairs.size());
         for (Pair<State, A> stateActionPair : stateActionPairs) {
             int firstOccurenceIndex = 0;
             // find first occurance of state action pair
             for (StepResult<A> sr : episode) {
-                if (stateActionPair.getKey().equals(sr.getState()) && stateActionPair.getValue().equals(sr.getAction())) {
+                if (stateActionPair.getValue0().equals(sr.getState()) && stateActionPair.getValue1().equals(sr.getAction())) {
                     break;
                 }
                 firstOccurenceIndex++;
@@ -101,7 +102,7 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
             // if the key does not exists, it will create a new entry with G as default value
             returnSum.merge(stateActionPair, G, Double::sum);
             returnCount.merge(stateActionPair, 1, Integer::sum);
-            stateActionTable.setValue(stateActionPair.getKey(), stateActionPair.getValue(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
+            stateActionTable.setValue(stateActionPair.getValue0(), stateActionPair.getValue1(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
         }
     }
 
