@@ -29,7 +29,6 @@ public class AntState implements State, Visualizable {
     private int computeHash() {
         int hash = 7;
         int prime = 31;
-
         int unknown = 0;
         int diff = 0;
         for (Cell[] cells : knownWorld) {

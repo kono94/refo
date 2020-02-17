@@ -30,21 +30,20 @@ import java.util.*;
  *
  * @param <A>
  */
-public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<A> {
+public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A> {
 
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
 
-    public MonteCarloOnPolicyEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
         super(environment, actionSpace, discountFactor, delay);
-        currentEpisode = 0;
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
         this.stateActionTable = new DeterministicStateActionTable<>(this.actionSpace);
         returnSum = new HashMap<>();
         returnCount = new HashMap<>();
     }
 
-    public MonteCarloOnPolicyEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
         this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_EPSILON, delay);
     }
 
@@ -59,7 +58,7 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
         }
         sumOfRewards = 0;
         StepResultEnvironment envResult = null;
-        while(envResult == null || !envResult.isDone()){
+        while(envResult == null || !envResult.isDone()) {
             Map<A, Double> actionValues = stateActionTable.getActionValues(state);
             A chosenAction = policy.chooseAction(actionValues);
             envResult = environment.step(chosenAction);
@@ -77,26 +76,26 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
             dispatchStepEnd();
         }
 
-      //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
+        //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
         Set<Pair<State, A>> stateActionPairs = new LinkedHashSet<>();
 
-        for (StepResult<A> sr : episode) {
+        for(StepResult<A> sr : episode) {
             stateActionPairs.add(new ImmutablePair<>(sr.getState(), sr.getAction()));
         }
 
         //System.out.println("stateActionPairs " + stateActionPairs.size());
-        for (Pair<State, A> stateActionPair : stateActionPairs) {
+        for(Pair<State, A> stateActionPair : stateActionPairs) {
             int firstOccurenceIndex = 0;
             // find first occurance of state action pair
-            for (StepResult<A> sr : episode) {
-                if (stateActionPair.getKey().equals(sr.getState()) && stateActionPair.getValue().equals(sr.getAction())) {
+            for(StepResult<A> sr : episode) {
+                if(stateActionPair.getKey().equals(sr.getState()) && stateActionPair.getValue().equals(sr.getAction())) {
                     break;
                 }
                 firstOccurenceIndex++;
             }
 
             double G = 0;
-            for (int l = firstOccurenceIndex; l < episode.size(); ++l) {
+            for(int l = firstOccurenceIndex; l < episode.size(); ++l) {
                 G += episode.get(l).getReward() * (Math.pow(discountFactor, l - firstOccurenceIndex));
             }
             // slick trick to add G to the entry.
@@ -105,16 +104,6 @@ public class MonteCarloOnPolicyEGreedy<A extends Enum> extends EpisodicLearning<
             returnCount.merge(stateActionPair, 1, Integer::sum);
             stateActionTable.setValue(stateActionPair.getKey(), stateActionPair.getValue(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
         }
-    }
-
-    @Override
-    public int getCurrentEpisode() {
-        return currentEpisode;
-    }
-
-    @Override
-    public int getEpisodesPerSecond(){
-        return episodePerSecond;
     }
 
     @Override

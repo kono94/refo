@@ -3,16 +3,17 @@ package example;
 import core.RNG;
 import core.algo.Method;
 import core.controller.RLController;
+import core.controller.RLControllerGUI;
 import evironment.antGame.AntAction;
 import evironment.antGame.AntWorld;
 
 public class RunningAnt {
     public static void main(String[] args) {
-        RNG.setSeed(123);
+        RNG.setSeed(56);
 
-        RLController<AntAction> rl = new RLController<>(
+        RLController<AntAction> rl = new RLControllerGUI<>(
                 new AntWorld(3, 3, 0.1),
-                Method.MC_ONPOLICY_EGREEDY,
+                Method.MC_CONTROL_EGREEDY,
                 AntAction.values());
 
         rl.setDelay(200);

@@ -56,18 +56,28 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
             dino.jump();
         }
 
-        for(int i= 0; i < 5; ++i){
-            dino.tick();
-            currentObstacle.tick();
-            if(currentObstacle.getX() < -Config.OBSTACLE_SIZE){
-                spawnNewObstacle();
-            }
-            comp.repaint();
-            if(ranIntoObstacle()){
-                done = true;
-                break;
-            }
+//        for(int i= 0; i < 5; ++i){
+//            dino.tick();
+//            currentObstacle.tick();
+//            if(currentObstacle.getX() < -Config.OBSTACLE_SIZE){
+//                spawnNewObstacle();
+//            }
+//            comp.repaint();
+//            if(ranIntoObstacle()){
+//                done = true;
+//                break;
+//            }
+//        }
+        dino.tick();
+        currentObstacle.tick();
+        if(currentObstacle.getX() < -Config.OBSTACLE_SIZE) {
+            spawnNewObstacle();
         }
+        if(ranIntoObstacle()) {
+            reward = 0;
+            done = true;
+        }
+
         return new StepResultEnvironment(new DinoStateWithSpeed(getDistanceToObstacle(), getCurrentObstacle().getDx()), reward, done, "");
     }
 

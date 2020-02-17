@@ -2,6 +2,7 @@ package core.algo;
 
 import core.DiscreteActionSpace;
 import core.Environment;
+import core.LearningConfig;
 import core.StepResult;
 import core.listener.LearningListener;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class EpisodicLearning<A extends Enum> extends Learning<A> implements Episodic {
     @Setter
-    protected int currentEpisode;
+    protected int currentEpisode = 0;
     protected volatile AtomicInteger episodesToLearn = new AtomicInteger(0);
     @Getter
     protected volatile int episodePerSecond;
@@ -81,7 +82,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     @Override
     public void learn(){
-      // TODO remove or learn with default episode number
+        learn(LearningConfig.DEFAULT_NR_OF_EPISODES);
     }
 
     private void startLearning(){
@@ -130,6 +131,15 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     @Override
     public int getEpisodesToGo(){
         return episodesToLearn.get();
+    }
+
+
+    public int getCurrentEpisode() {
+        return currentEpisode;
+    }
+
+    public int getEpisodesPerSecond() {
+        return episodePerSecond;
     }
 
     @Override

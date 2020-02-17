@@ -12,15 +12,17 @@ public class JumpingDino {
         RNG.setSeed(55);
 
         RLController<DinoAction> rl = new RLControllerGUI<>(
-                new DinoWorld(true, true),
-                Method.MC_ONPOLICY_EGREEDY,
+                new DinoWorld(false, false),
+                Method.Q_LEARNING_OFF_POLICY_CONTROL,
                 DinoAction.values());
 
-        rl.setDelay(100);
-        rl.setDiscountFactor(1f);
-        rl.setEpsilon(0.15f);
-        rl.setNrOfEpisodes(100000);
-
+        rl.setDelay(10);
+        rl.setDiscountFactor(0.8f);
+        rl.setEpsilon(0.1f);
+        rl.setLearningRate(0.5f);
+        rl.setNrOfEpisodes(10000);
         rl.start();
+
+
     }
 }

@@ -28,9 +28,11 @@ public class Dino extends RenderObject {
     @Override
     public void tick(){
         // reached max jump height
-        if(y + dy < Config.FRAME_HEIGHT - Config.GROUND_Y -Config.OBSTACLE_SIZE - Config.MAX_JUMP_HEIGHT){
+        int topOfDino = Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE;
+
+        if(y + dy <= topOfDino - Config.MAX_JUMP_HEIGHT) {
             fall();
-        }else if(y + dy >= Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE){
+        } else if(y + dy >= topOfDino) {
             inJump = false;
             dy = 0;
             y = Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE;

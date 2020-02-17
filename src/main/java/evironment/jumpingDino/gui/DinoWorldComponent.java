@@ -19,7 +19,7 @@ public class DinoWorldComponent extends JComponent {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(Color.BLACK);
-        g.fillRect(0, Config.FRAME_HEIGHT - Config.GROUND_Y, Config.FRAME_WIDTH, 2);
+        g.fillRect(0, Config.FRAME_HEIGHT - Config.GROUND_Y, getWidth(), 2);
 
         dinoWorld.getDino().render(g);
         dinoWorld.getCurrentObstacle().render(g);

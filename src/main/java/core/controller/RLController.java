@@ -1,18 +1,19 @@
 package core.controller;
 
-import core.*;
+import core.DiscreteActionSpace;
+import core.Environment;
+import core.LearningConfig;
+import core.ListDiscreteActionSpace;
 import core.algo.EpisodicLearning;
 import core.algo.Learning;
 import core.algo.Method;
-import core.algo.mc.MonteCarloOnPolicyEGreedy;
-import core.gui.LearningView;
-import core.gui.View;
+import core.algo.mc.MonteCarloControlEGreedy;
+import core.algo.td.QLearningOffPolicyTDControl;
+import core.algo.td.SARSA;
 import core.listener.LearningListener;
-import core.listener.ViewListener;
 import core.policy.EpsilonPolicy;
 import lombok.Setter;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class RLController<A extends Enum> implements LearningListener {
     protected int delay = LearningConfig.DEFAULT_DELAY;
     @Setter
     protected float discountFactor = LearningConfig.DEFAULT_DISCOUNT_FACTOR;
+    @Setter
+    protected float learningRate = LearningConfig.DEFAULT_DISCOUNT_FACTOR;
     @Setter
     protected float epsilon = LearningConfig.DEFAULT_EPSILON;
     protected Learning<A> learning;
@@ -45,10 +48,14 @@ public class RLController<A extends Enum> implements LearningListener {
 
     public void start() {
         switch(method) {
-            case MC_ONPOLICY_EGREEDY:
-                learning = new MonteCarloOnPolicyEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
+            case MC_CONTROL_EGREEDY:
+                learning = new MonteCarloControlEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
                 break;
-            case TD_ONPOLICY:
+            case SARSA_EPISODIC:
+                learning = new SARSA<>(environment, discreteActionSpace, discountFactor, epsilon, learningRate, delay);
+                break;
+            case Q_LEARNING_OFF_POLICY_CONTROL:
+                learning = new QLearningOffPolicyTDControl<>(environment, discreteActionSpace, discountFactor, epsilon, learningRate, delay);
                 break;
             default:
                 throw new IllegalArgumentException("Undefined method");
