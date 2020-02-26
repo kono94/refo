@@ -14,12 +14,15 @@ import java.util.Objects;
 @Getter
 public class DinoState implements State, Serializable, Visualizable {
     private int xDistanceToObstacle;
+    private boolean isJumping;
+
     protected final double scale = 0.5;
 
     @Override
     public String toString() {
         return "DinoState{" +
                 "xDistanceToObstacle=" + xDistanceToObstacle +
+                "isJumping=" + isJumping +
                 '}';
     }
 
@@ -28,12 +31,12 @@ public class DinoState implements State, Serializable, Visualizable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DinoState dinoState = (DinoState) o;
-        return xDistanceToObstacle == dinoState.xDistanceToObstacle;
+        return xDistanceToObstacle == dinoState.xDistanceToObstacle && isJumping == dinoState.isJumping;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(xDistanceToObstacle);
+        return Objects.hash(xDistanceToObstacle, isJumping);
     }
 
     @Override

@@ -42,7 +42,6 @@ public class QTableFrame<A extends Enum> extends JFrame {
         }
     }
     protected void refreshQTable() {
-        System.out.println("ref");
         int stateCount = stateActionTable.getStateCount();
         stateCountLabel.setText("Total states: " + stateCount);
         int idx = -1;

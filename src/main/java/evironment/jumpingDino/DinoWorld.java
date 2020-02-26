@@ -50,7 +50,7 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
     @Override
     public StepResultEnvironment step(DinoAction action) {
         boolean done = false;
-        int reward = 1;
+        int reward = 0;
 
         if(action == DinoAction.JUMP){
             dino.jump();
@@ -74,11 +74,11 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
             spawnNewObstacle();
         }
         if(ranIntoObstacle()) {
-            reward = 0;
+            reward = -1;
             done = true;
         }
 
-        return new StepResultEnvironment(new DinoStateWithSpeed(getDistanceToObstacle(), getCurrentObstacle().getDx()), reward, done, "");
+        return new StepResultEnvironment(new DinoStateWithSpeed(getDistanceToObstacle(), dino.isInJump(), getCurrentObstacle().getDx()), reward, done, "");
     }
 
 
@@ -110,7 +110,7 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
     public State reset() {
         spawnDino();
         spawnNewObstacle();
-        return new DinoState(getDistanceToObstacle());
+        return new DinoState(getDistanceToObstacle(), dino.isInJump());
     }
 
     @Override

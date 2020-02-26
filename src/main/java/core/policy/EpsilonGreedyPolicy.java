@@ -37,5 +37,6 @@ public class EpsilonGreedyPolicy<A extends Enum> implements EpsilonPolicy<A>{
             // Take the action with the highest value
             return greedyPolicy.chooseAction(actionValues);
         }
+
     }
 }

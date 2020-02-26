@@ -16,13 +16,11 @@ public class JumpingDino {
                 Method.Q_LEARNING_OFF_POLICY_CONTROL,
                 DinoAction.values());
 
-        rl.setDelay(10);
-        rl.setDiscountFactor(0.8f);
+        rl.setDelay(1000);
+        rl.setDiscountFactor(0.9f);
         rl.setEpsilon(0.1f);
         rl.setLearningRate(0.5f);
-        rl.setNrOfEpisodes(10000);
+        rl.setNrOfEpisodes(4000000);
         rl.start();
-
-
     }
 }

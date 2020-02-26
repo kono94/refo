@@ -10,8 +10,8 @@ import java.util.Objects;
 public class DinoStateWithSpeed extends DinoState implements Visualizable {
     private int obstacleSpeed;
 
-    public DinoStateWithSpeed(int xDistanceToObstacle, int obstacleSpeed) {
-        super(xDistanceToObstacle);
+    public DinoStateWithSpeed(int xDistanceToObstacle, boolean isJumping, int obstacleSpeed) {
+        super(xDistanceToObstacle, isJumping);
         this.obstacleSpeed = obstacleSpeed;
     }
 
