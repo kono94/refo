@@ -13,7 +13,7 @@ public class RunningAnt {
 
         RLController<AntAction> rl = new RLControllerGUI<>(
                 new AntWorld(3, 3, 0.1),
-                Method.MC_CONTROL_EGREEDY,
+                Method.MC_CONTROL_FIRST_VISIT,
                 AntAction.values());
 
         rl.setDelay(200);

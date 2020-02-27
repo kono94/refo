@@ -5,5 +5,5 @@ package core.algo;
  * which RL-algorithm should be used.
  */
 public enum Method {
-    MC_CONTROL_EGREEDY, SARSA_EPISODIC, Q_LEARNING_OFF_POLICY_CONTROL
+    MC_CONTROL_FIRST_VISIT, SARSA_EPISODIC, Q_LEARNING_OFF_POLICY_CONTROL
 }

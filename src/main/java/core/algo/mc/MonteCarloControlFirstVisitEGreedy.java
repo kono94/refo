@@ -17,7 +17,7 @@ import java.util.*;
  * For example:
  * <p>
  * startingState -> MOVE_LEFT : very first state action in the episode i = 1
- * image the agent does not collect the food and drops it to the start, the agent will receive
+ * image the agent does not collect the food and does not drop it onto start, the agent will receive
  * -1 for every timestamp hence (startingState -> MOVE_LEFT) will get a value of -10;
  * <p>
  * BUT image moving left from the starting position will have no impact on the state because
@@ -30,12 +30,12 @@ import java.util.*;
  *
  * @param <A>
  */
-public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A> {
+public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends EpisodicLearning<A> {
 
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
 
-    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
+    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
         super(environment, actionSpace, discountFactor, delay);
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
         this.stateActionTable = new DeterministicStateActionTable<>(this.actionSpace);
@@ -43,7 +43,7 @@ public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A
         returnCount = new HashMap<>();
     }
 
-    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
+    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
         this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_EPSILON, delay);
     }
 
@@ -58,12 +58,16 @@ public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A
         }
         sumOfRewards = 0;
         StepResultEnvironment envResult = null;
+        //TODO extract to learning
+        int timestamp = 0;
         while(envResult == null || !envResult.isDone()) {
             Map<A, Double> actionValues = stateActionTable.getActionValues(state);
             A chosenAction = policy.chooseAction(actionValues);
+            checkSum += chosenAction.ordinal();
             envResult = environment.step(chosenAction);
             State nextState = envResult.getState();
             sumOfRewards += envResult.getReward();
+            rewardCheckSum += envResult.getReward();
             episode.add(new StepResult<>(state, chosenAction, envResult.getReward()));
 
             state = nextState;
@@ -73,6 +77,7 @@ public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            timestamp++;
             dispatchStepEnd();
         }
 
