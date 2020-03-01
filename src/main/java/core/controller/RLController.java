@@ -109,7 +109,7 @@ public class RLController<A extends Enum> implements LearningListener {
         }
     }
 
-    protected void saveState(String fileName) {
+    protected void loadState(String fileName) {
         FileInputStream fis;
         ObjectInputStream in;
         try {
@@ -124,7 +124,7 @@ public class RLController<A extends Enum> implements LearningListener {
         }
     }
 
-    protected void loadState(String fileName) {
+    protected void saveState(String fileName) {
         FileOutputStream fos;
         ObjectOutputStream out;
         try {
