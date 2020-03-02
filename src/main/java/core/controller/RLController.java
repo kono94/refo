@@ -7,7 +7,7 @@ import core.ListDiscreteActionSpace;
 import core.algo.EpisodicLearning;
 import core.algo.Learning;
 import core.algo.Method;
-import core.algo.mc.MonteCarloControlEGreedy;
+import core.algo.mc.MonteCarloControlFirstVisitEGreedy;
 import core.algo.td.QLearningOffPolicyTDControl;
 import core.algo.td.SARSA;
 import core.listener.LearningListener;
@@ -48,8 +48,8 @@ public class RLController<A extends Enum> implements LearningListener {
 
     public void start() {
         switch(method) {
-            case MC_CONTROL_EGREEDY:
-                learning = new MonteCarloControlEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
+            case MC_CONTROL_FIRST_VISIT:
+                learning = new MonteCarloControlFirstVisitEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
                 break;
             case SARSA_EPISODIC:
                 learning = new SARSA<>(environment, discreteActionSpace, discountFactor, epsilon, learningRate, delay);
@@ -115,7 +115,7 @@ public class RLController<A extends Enum> implements LearningListener {
         try {
             fis = new FileInputStream(fileName);
             in = new ObjectInputStream(fis);
-            System.out.println("interrup" + Thread.currentThread().getId());
+            System.out.println("interrupt" + Thread.currentThread().getId());
             learning.interruptLearning();
             learning.load(in);
             in.close();

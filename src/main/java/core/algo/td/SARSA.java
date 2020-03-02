@@ -46,7 +46,7 @@ public class SARSA<A extends Enum> extends EpisodicLearning<A> {
             actionValues = stateActionTable.getActionValues(nextState);
             A nextAction = policy.chooseAction(actionValues);
 
-            // TD update
+            // td update
             // target = reward + gamma * Q(nextState, nextAction)
             double currentQValue = stateActionTable.getActionValues(state).get(action);
             double nextQValue = stateActionTable.getActionValues(nextState).get(nextAction);

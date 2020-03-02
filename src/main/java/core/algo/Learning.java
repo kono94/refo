@@ -12,7 +12,6 @@ import lombok.Setter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +25,13 @@ import java.util.concurrent.Executors;
  */
 @Getter
 public abstract class Learning<A extends Enum>{
+    // TODO: temp testing -> extract to dedicated test
+    protected int checkSum;
+    protected int rewardCheckSum;
+
+    // current discrete timestamp t
+    protected int timestamp;
+    protected int currentEpisode;
     protected Policy<A> policy;
     protected DiscreteActionSpace<A> actionSpace;
     @Setter
@@ -83,6 +89,8 @@ public abstract class Learning<A extends Enum>{
 
     protected void dispatchLearningEnd() {
         currentlyLearning = false;
+        System.out.println("Checksum: " + checkSum);
+        System.out.println("Reward Checksum: " + rewardCheckSum);
         for (LearningListener l : learningListeners) {
             l.onLearningEnd();
         }
