@@ -13,7 +13,7 @@ public class BlackJack {
 
         RLController<PlayerAction> rl = new RLControllerGUI<>(
                 new BlackJackTable(),
-                Method.MC_CONTROL_EGREEDY,
+                Method.MC_CONTROL_FIRST_VISIT,
                 PlayerAction.values());
 
         rl.setDelay(1000);
