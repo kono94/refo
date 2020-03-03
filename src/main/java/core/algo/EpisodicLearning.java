@@ -9,9 +9,13 @@ import core.policy.EpsilonGreedyPolicy;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,7 +29,8 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     protected int episodeSumCurrentSecond;
     protected double sumOfRewards;
     protected List<StepResult<A>> episode = new ArrayList<>();
-
+    protected int timestampCurrentEpisode = 0;
+    protected boolean converged;
     public EpisodicLearning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, int delay) {
         super(environment, actionSpace, discountFactor, delay);
         initBenchMarking();
@@ -50,7 +55,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     private void initBenchMarking(){
         new Thread(()->{
-            while (true){
+            while (currentlyLearning){
                 episodePerSecond = episodeSumCurrentSecond;
                 episodeSumCurrentSecond = 0;
                 try {
@@ -62,7 +67,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         }).start();
     }
 
-    protected void dispatchEpisodeEnd(){
+    private void dispatchEpisodeEnd(){
         ++episodeSumCurrentSecond;
         if(rewardHistory.size() > 10000){
             rewardHistory.clear();
@@ -73,20 +78,20 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         }
     }
 
-    protected void dispatchEpisodeStart(){
+    private void dispatchEpisodeStart(){
         ++currentEpisode;
         /*
-        2f 0.02 => 100
-        1.5f 0.02 => 75
-        1.4f 0.02 => fail
-        1.5f 0.1 => 16 !
-         */
-        if(this.policy instanceof EpsilonGreedyPolicy){
-            float ep = 1.5f/(float)currentEpisode;
-            if(ep < 0.10) ep = 0;
-           ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(ep);
-            System.out.println(ep);
-        }
+            2f 0.02 => 100
+            1.5f 0.02 => 75
+            1.4f 0.02 => fail
+            1.5f 0.1 => 16 !
+        */
+//        if(this.policy instanceof EpsilonGreedyPolicy){
+//            float ep = 2f/(float)currentEpisode;
+//            if(ep < 0.02) ep = 0;
+//            ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(ep);
+//            System.out.println(ep);
+//        }
         episodesToLearn.decrementAndGet();
         for(LearningListener l: learningListeners){
             l.onEpisodeStart();
@@ -97,10 +102,20 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     protected void dispatchStepEnd() {
         super.dispatchStepEnd();
         timestamp++;
+        timestampCurrentEpisode++;
         // TODO: more sophisticated way to check convergence
-        if(timestamp > 300000){
-            System.out.println("converged after: " + currentEpisode + " episode!");
-            interruptLearning();
+        if(timestampCurrentEpisode > 300000){
+            converged = true;
+            // t
+            File file = new File("convergence.txt");
+            try {
+                Files.writeString(Path.of(file.getPath()),  currentEpisode/2 + ",", StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("converged after: " + currentEpisode/2 + " episode!");
+            episodesToLearn.set(0);
+            dispatchLearningEnd();
         }
     }
 
@@ -110,20 +125,23 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     }
 
     private void startLearning(){
-        learningExecutor.submit(()->{
-            dispatchLearningStart();
-            while(episodesToLearn.get() > 0){
-                dispatchEpisodeStart();
-                nextEpisode();
-                dispatchEpisodeEnd();
-            }
-            synchronized (this){
-                dispatchLearningEnd();
-                notifyAll();
-            }
-        });
+        dispatchLearningStart();
+        while(episodesToLearn.get() > 0){
+
+            dispatchEpisodeStart();
+            timestampCurrentEpisode = 0;
+            nextEpisode();
+            dispatchEpisodeEnd();
+        }
+        synchronized (this){
+            dispatchLearningEnd();
+            notifyAll();
+        }
     }
 
+    public void learnMoreEpisodes(int nrOfEpisodes){
+        episodesToLearn.addAndGet(nrOfEpisodes);
+    }
     /**
      * Stopping the while loop by setting episodesToLearn to 0.
      * The current episode can not be interrupted, so the sleep delay

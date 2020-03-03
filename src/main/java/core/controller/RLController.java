@@ -67,17 +67,17 @@ public class RLController<A extends Enum> implements LearningListener {
     }
 
     protected void initListeners() {
-        learning.addListener(this);
-        new Thread(() -> {
-            while(true) {
-                printNextEpisode = true;
-                try {
-                    Thread.sleep(30 * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            learning.addListener(this);
+            new Thread(() -> {
+                while(learning.isCurrentlyLearning()) {
+                    printNextEpisode = true;
+                    try {
+                        Thread.sleep(30 * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        }).start();
+            }).start();
     }
 
     private void initLearning() {
@@ -95,7 +95,13 @@ public class RLController<A extends Enum> implements LearningListener {
 
     protected void learnMoreEpisodes(int nrOfEpisodes) {
         if(learning instanceof EpisodicLearning) {
-            ((EpisodicLearning) learning).learn(nrOfEpisodes);
+            if(learning.isCurrentlyLearning()){
+                ((EpisodicLearning) learning).learnMoreEpisodes(nrOfEpisodes);
+            }else{
+                new Thread(() -> {
+                    ((EpisodicLearning) learning).learn(nrOfEpisodes);
+                }).start();
+            }
         } else {
             throw new RuntimeException("Triggering onLearnMoreEpisodes on non-episodic learning!");
         }

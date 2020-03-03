@@ -3,12 +3,17 @@ package core.algo.mc;
 import core.*;
 import core.algo.EpisodicLearning;
 import core.policy.EpsilonGreedyPolicy;
+import core.policy.GreedyPolicy;
+import core.policy.Policy;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 /**
@@ -35,8 +40,16 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
 
+    // t
+    private float epsilon;
+    // t
+    private Policy<A> greedyPolicy = new GreedyPolicy<>();
+
+
     public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
         super(environment, actionSpace, discountFactor, delay);
+        // t
+        this.epsilon = epsilon;
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
         this.stateActionTable = new DeterministicStateActionTable<>(this.actionSpace);
         returnSum = new HashMap<>();
@@ -58,12 +71,16 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
         }
         sumOfRewards = 0;
         StepResultEnvironment envResult = null;
-        //TODO extract to learning
-        int timestamp = 0;
+
         while(envResult == null || !envResult.isDone()) {
             Map<A, Double> actionValues = stateActionTable.getActionValues(state);
-            A chosenAction = policy.chooseAction(actionValues);
-            checkSum += chosenAction.ordinal();
+            A chosenAction;
+            if(currentEpisode % 2 == 1){
+                chosenAction = greedyPolicy.chooseAction(actionValues);
+            }else{
+                chosenAction = policy.chooseAction(actionValues);
+            }
+
             envResult = environment.step(chosenAction);
             State nextState = envResult.getState();
             sumOfRewards += envResult.getReward();
@@ -79,6 +96,11 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
             }
             timestamp++;
             dispatchStepEnd();
+            if(converged) return;
+        }
+
+        if(currentEpisode % 2 == 1){
+            return;
         }
 
         //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
