@@ -5,7 +5,6 @@ import core.algo.Method;
 import core.controller.RLController;
 import core.controller.RLControllerGUI;
 import evironment.jumpingDino.DinoAction;
-import evironment.jumpingDino.DinoWorld;
 import evironment.jumpingDino.DinoWorldAdvanced;
 
 public class JumpingDino {
@@ -21,7 +20,7 @@ public class JumpingDino {
         rl.setDiscountFactor(1f);
         rl.setEpsilon(0.15f);
         rl.setLearningRate(1f);
-        rl.setNrOfEpisodes(50000);
+        rl.setNrOfEpisodes(50001);
         rl.start();
     }
 }
