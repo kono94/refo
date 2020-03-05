@@ -60,9 +60,9 @@ public class LearningInfoPanel extends JPanel {
             viewListener.onFastLearnChange(fastLearning);
         });
         smoothGraphCheckbox = new JCheckBox("Smoothen Graph");
-        smoothGraphCheckbox.setSelected(false);
+        smoothGraphCheckbox.setSelected(true);
         last100Checkbox = new JCheckBox("Only show last 100 Rewards");
-        last100Checkbox.setSelected(true);
+        last100Checkbox.setSelected(false);
         drawEnvironmentCheckbox = new JCheckBox("Update Environment");
         drawEnvironmentCheckbox.setSelected(true);
 

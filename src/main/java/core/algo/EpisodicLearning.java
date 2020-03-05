@@ -50,7 +50,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     private void initBenchMarking(){
         new Thread(()->{
-            while (true){
+            while (currentlyLearning){
                 episodePerSecond = episodeSumCurrentSecond;
                 episodeSumCurrentSecond = 0;
                 try {
@@ -62,7 +62,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         }).start();
     }
 
-    protected void dispatchEpisodeEnd(){
+    private void dispatchEpisodeEnd(){
         ++episodeSumCurrentSecond;
         if(rewardHistory.size() > 10000){
             rewardHistory.clear();
@@ -75,18 +75,6 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     protected void dispatchEpisodeStart(){
         ++currentEpisode;
-        /*
-        2f 0.02 => 100
-        1.5f 0.02 => 75
-        1.4f 0.02 => fail
-        1.5f 0.1 => 16 !
-         */
-        if(this.policy instanceof EpsilonGreedyPolicy){
-            float ep = 1.5f/(float)currentEpisode;
-            if(ep < 0.10) ep = 0;
-           ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(ep);
-            System.out.println(ep);
-        }
         episodesToLearn.decrementAndGet();
         for(LearningListener l: learningListeners){
             l.onEpisodeStart();
@@ -97,31 +85,24 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     protected void dispatchStepEnd() {
         super.dispatchStepEnd();
         timestamp++;
-        // TODO: more sophisticated way to check convergence
-        if(timestamp > 300000){
-            System.out.println("converged after: " + currentEpisode + " episode!");
-            interruptLearning();
-        }
-    }
-
-    @Override
-    public void learn(){
-        learn(LearningConfig.DEFAULT_NR_OF_EPISODES);
     }
 
     private void startLearning(){
-        learningExecutor.submit(()->{
-            dispatchLearningStart();
-            while(episodesToLearn.get() > 0){
-                dispatchEpisodeStart();
-                nextEpisode();
-                dispatchEpisodeEnd();
-            }
-            synchronized (this){
-                dispatchLearningEnd();
-                notifyAll();
-            }
-        });
+        dispatchLearningStart();
+        System.out.println(episodesToLearn.get());
+        while(episodesToLearn.get() > 0){
+            dispatchEpisodeStart();
+            nextEpisode();
+            dispatchEpisodeEnd();
+        }
+        synchronized (this){
+            dispatchLearningEnd();
+            notifyAll();
+        }
+    }
+
+    public void learnMoreEpisodes(int nrOfEpisodes){
+        episodesToLearn.addAndGet(nrOfEpisodes);
     }
 
     /**
@@ -146,8 +127,14 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         delay = prevDelay;
     }
 
+    @Override
+    public void learn(){
+        learn(LearningConfig.DEFAULT_NR_OF_EPISODES);
+    }
+
     public synchronized void learn(int nrOfEpisodes){
         boolean isLearning = episodesToLearn.getAndAdd(nrOfEpisodes) != 0;
+        System.out.println(isLearning);
         if(!isLearning)
             startLearning();
     }

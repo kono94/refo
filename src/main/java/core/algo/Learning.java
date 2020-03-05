@@ -42,8 +42,7 @@ public abstract class Learning<A extends Enum>{
     @Setter
     protected int delay;
     protected List<Double> rewardHistory;
-    protected ExecutorService learningExecutor;
-    protected boolean currentlyLearning;
+    protected volatile boolean currentlyLearning;
 
     public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, int delay) {
         this.environment = environment;
@@ -53,7 +52,6 @@ public abstract class Learning<A extends Enum>{
         currentlyLearning = false;
         learningListeners = new HashSet<>();
         rewardHistory = new CopyOnWriteArrayList<>();
-        learningExecutor = Executors.newSingleThreadExecutor();
     }
 
     public Learning(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor) {
@@ -89,8 +87,6 @@ public abstract class Learning<A extends Enum>{
 
     protected void dispatchLearningEnd() {
         currentlyLearning = false;
-        System.out.println("Checksum: " + checkSum);
-        System.out.println("Reward Checksum: " + rewardCheckSum);
         for (LearningListener l : learningListeners) {
             l.onLearningEnd();
         }
