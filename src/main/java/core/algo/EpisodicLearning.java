@@ -107,7 +107,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         if(timestampCurrentEpisode > 300000){
             converged = true;
             // t
-            File file = new File("convergence.txt");
+            File file = new File("convergenceAdv.txt");
             try {
                 Files.writeString(Path.of(file.getPath()),  currentEpisode/2 + ",", StandardOpenOption.APPEND);
             } catch (IOException e) {

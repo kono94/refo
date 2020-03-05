@@ -5,6 +5,7 @@ import core.algo.Method;
 import core.controller.RLController;
 import evironment.jumpingDino.DinoAction;
 import evironment.jumpingDino.DinoWorld;
+import evironment.jumpingDino.DinoWorldAdvanced;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.nio.file.StandardOpenOption;
 
 public class DinoSampling {
     public static void main(String[] args) {
-        File file = new File("convergence.txt");
+        File file = new File("convergenceAdv.txt");
         for(float f = 0.05f; f <=1.003 ; f+=0.05f){
             try {
                 Files.writeString(Path.of(file.getPath()), f + ",", StandardOpenOption.APPEND);
@@ -26,14 +27,14 @@ public class DinoSampling {
                 RNG.setSeed(i *13);
 
                 RLController<DinoAction> rl = new RLController<>(
-                        new DinoWorld(),
+                        new DinoWorldAdvanced(),
                         Method.MC_CONTROL_FIRST_VISIT,
                         DinoAction.values());
                 rl.setDelay(0);
                 rl.setDiscountFactor(1f);
                 rl.setEpsilon(f);
                 rl.setLearningRate(1f);
-                rl.setNrOfEpisodes(20000);
+                rl.setNrOfEpisodes(100000);
                 rl.start();
 
             }

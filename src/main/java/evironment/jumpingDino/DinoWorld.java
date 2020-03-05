@@ -10,6 +10,9 @@ import lombok.Getter;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * 57 states
+ */
 @Getter
 public class DinoWorld implements Environment<DinoAction>, Visualizable {
     protected Dino dino;
