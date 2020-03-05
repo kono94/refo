@@ -12,7 +12,7 @@ public class JumpingDino {
         RNG.setSeed(55);
 
         RLController<DinoAction> rl = new RLControllerGUI<>(
-                new DinoWorld(false, false),
+                new DinoWorld(),
                 Method.MC_CONTROL_FIRST_VISIT,
                 DinoAction.values());
 
