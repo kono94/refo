@@ -50,7 +50,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     private void initBenchMarking(){
         new Thread(()->{
-            while (currentlyLearning){
+            while (true){
                 episodePerSecond = episodeSumCurrentSecond;
                 episodeSumCurrentSecond = 0;
                 try {
