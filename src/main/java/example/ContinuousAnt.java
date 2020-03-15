@@ -5,20 +5,19 @@ import core.algo.Method;
 import core.controller.RLController;
 import core.controller.RLControllerGUI;
 import evironment.antGame.AntAction;
-import evironment.antGame.AntWorld;
+import evironment.antGame.AntWorldContinuous;
 
-public class RunningAnt {
+public class ContinuousAnt {
     public static void main(String[] args) {
         RNG.setSeed(56);
-
         RLController<AntAction> rl = new RLControllerGUI<>(
-                new AntWorld(8, 8),
+                new AntWorldContinuous(8, 8),
                 Method.Q_LEARNING_OFF_POLICY_CONTROL,
                 AntAction.values());
 
         rl.setDelay(200);
         rl.setNrOfEpisodes(10000);
-        rl.setDiscountFactor(0.9f);
+        rl.setDiscountFactor(0.95f);
         rl.setEpsilon(0.15f);
 
         rl.start();

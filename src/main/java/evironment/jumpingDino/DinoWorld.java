@@ -76,7 +76,7 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
     }
 
     protected State generateReturnState(){
-        return new DinoState(getDistanceToObstacle(), dino.isInJump());
+        return new DinoStateSimple(getDistanceToObstacle());
     }
 
     protected void spawnNewObstacle(){

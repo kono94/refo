@@ -1,6 +1,26 @@
 # Libraries
 library(ggplot2)
+library(matrixStats)
+# file.choose()
 convergence <- read.csv(file.choose(), header=FALSE, row.names=1)
-men <-  rowMeans(convergence[,-1])
-ba <- barplot(names=rownames(convergence), height=men, ylim=c(0,max(men) +100), ylab = "avg. episodes until convergence", xlab = "epsilon value")
+
+sds <- rowSds(sapply(convergence[,-1], `length<-`, max(lengths(convergence[,-1]))), na.rm=TRUE)
+men <- rowMeans(sapply(convergence[,-1], `length<-`, max(lengths(convergence[,-1]))), na.rm=TRUE)
+print(sds)
+
+# create dummy data
+data <- data.frame(
+  names=rownames(convergence),
+  means=men,
+  sds=sds
+)
+
+ggplot(data) +
+  geom_bar(aes(x=names, y=means), stat="identity", fill="skyblue", alpha=0.7) +
+  geom_errorbar( aes(x=names, ymin=means-sds, ymax=means+sds), width=0.4, colour="orange", alpha=0.9, size=1.3) +
+  geom_text(aes(label=as.integer(means), x =names, y=means), position=position_dodge(width=0.9), vjust=-0.25) +
+  xlab("Epsilon") + ylab("avg. amount of episodes until convergence") 
+
+
+ba <- barplot(names=rownames(convergence), height=men, ylim=c(0, max(men)*1.2), ylab = "avg. episodes until convergence", xlab = "epsilon value")
 text(x = ba, y = men, label = as.integer(men), pos = 3, cex = 0.8, col = "red")

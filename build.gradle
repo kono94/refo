@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 group 'net.lwenstrom.jan'
@@ -28,7 +29,7 @@ dependencies {
 }
 
 // Include dependent libraries in archive.
-mainClassName = "example.JumpingDino"
+mainClassName = "example.DinoSampling"
 
 
 jar {

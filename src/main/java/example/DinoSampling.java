@@ -4,7 +4,6 @@ import core.RNG;
 import core.algo.Method;
 import core.controller.RLController;
 import evironment.jumpingDino.DinoAction;
-import evironment.jumpingDino.DinoWorld;
 import evironment.jumpingDino.DinoWorldAdvanced;
 
 import java.io.File;
@@ -34,7 +33,7 @@ public class DinoSampling {
                 rl.setDiscountFactor(1f);
                 rl.setEpsilon(f);
                 rl.setLearningRate(1f);
-                rl.setNrOfEpisodes(100000);
+                rl.setNrOfEpisodes(50000);
                 rl.start();
 
             }

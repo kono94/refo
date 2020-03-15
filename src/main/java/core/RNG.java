@@ -1,9 +1,10 @@
 package core;
-
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
+ * ! SecureRandom not working properly on windows/different JDKs,
+ * using Random again !
+ *
  * To ensure deterministic behaviour of repeating program executions,
  * this class is used for all random number generation methods.
  * Do not use Math.random()!
@@ -13,10 +14,10 @@ import java.util.Random;
  * execution)
  */
 public class RNG {
-    private static SecureRandom rng;
+    private static Random rng;
     private static int seed = 123;
     static {
-        rng = new SecureRandom();
+        rng = new Random();
         rng.setSeed(seed);
     }
 

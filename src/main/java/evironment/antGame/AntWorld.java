@@ -9,16 +9,19 @@ import evironment.antGame.gui.AntWorldComponent;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Episodic AntWorld
+ */
 public class AntWorld implements Environment<AntAction>, Visualizable {
     /**
      *
      */
-    private Grid grid;
+    protected Grid grid;
     /**
      * Intern (backend) representation of the ant.
      * The AntWorld essentially acts like the game host of the original AntGame.
      */
-    private Ant myAnt;
+    protected Ant myAnt;
     /**
      * The client agent. In the original AntGame the host would send jade messages
      * of the current observation to each client on every tick.
@@ -32,13 +35,13 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
      * through an intern grid clone (brain), for example. A history as mentioned in
      * various lectures could be possible as well.
      */
-    private AntAgent antAgent;
+    protected AntAgent antAgent;
 
-    private int tick;
+    protected int tick;
     private int maxEpisodeTicks;
 
-    public AntWorld(int width, int height, double foodDensity){
-        grid = new Grid(width, height, foodDensity);
+    public AntWorld(int width, int height) {
+        grid = new Grid(width, height);
         antAgent = new AntAgent(width, height);
         myAnt = new Ant();
         maxEpisodeTicks = 1000;
@@ -46,73 +49,68 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
     }
 
     public AntWorld(){
-        this(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT, Constants.DEFAULT_FOOD_DENSITY);
+        this(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT);
     }
 
-    @Override
-    public StepResultEnvironment step(AntAction action){
-        AntObservation observation;
-        State newState;
-        double reward = 0;
-        String info = "";
-        boolean done = false;
-
+    protected StepCalculation processStep(AntAction action) {
+        StepCalculation sc = new StepCalculation();
+        sc.reward = -1;
+        sc.info = "";
+        sc.done = false;
         Cell currentCell = grid.getCell(myAnt.getPos());
-        Point potentialNextPos = new Point(myAnt.getPos().x, myAnt.getPos().y);
-        boolean stayOnCell = true;
+        sc.potentialNextPos = new Point(myAnt.getPos().x, myAnt.getPos().y);
+        sc.stayOnCell = true;
         // flag to enable a check if all food has been collected only fired if food was dropped
         // on the starting position
-        boolean checkCompletion = false;
+        sc.checkCompletion = false;
 
-        switch (action) {
+        switch(action) {
             case MOVE_UP:
-                potentialNextPos.y -= 1;
-                stayOnCell = false;
+                sc.potentialNextPos.y -= 1;
+                sc.stayOnCell = false;
                 break;
             case MOVE_RIGHT:
-                potentialNextPos.x += 1;
-                stayOnCell = false;
+                sc.potentialNextPos.x += 1;
+                sc.stayOnCell = false;
                 break;
             case MOVE_DOWN:
-                potentialNextPos.y += 1;
-                stayOnCell = false;
+                sc.potentialNextPos.y += 1;
+                sc.stayOnCell = false;
                 break;
             case MOVE_LEFT:
-                potentialNextPos.x -= 1;
-                stayOnCell = false;
+                sc.potentialNextPos.x -= 1;
+                sc.stayOnCell = false;
                 break;
             case PICK_UP:
-                if(myAnt.hasFood()){
+                if(myAnt.hasFood()) {
                     // Ant tries to pick up food but can only hold one piece
-                    reward = Reward.FOOD_PICK_UP_FAIL_HAS_FOOD_ALREADY;
-                }else if(currentCell.getFood() == 0){
+                    sc.reward += Reward.FOOD_PICK_UP_FAIL_HAS_FOOD_ALREADY;
+                } else if(currentCell.getFood() == 0) {
                     // Ant tries to pick up food on cell that has no food on it
-                    reward = Reward.FOOD_PICK_UP_FAIL_NO_FOOD;
-                }else if(currentCell.getFood() > 0){
+                    sc.reward += Reward.FOOD_PICK_UP_FAIL_NO_FOOD;
+                } else if(currentCell.getFood() > 0) {
                     // Ant successfully picks up food
                     currentCell.setFood(currentCell.getFood() - 1);
                     myAnt.setHasFood(true);
-                    reward = Reward.FOOD_PICK_UP_SUCCESS;
+                    sc.reward = Reward.FOOD_PICK_UP_SUCCESS;
                 }
                 break;
             case DROP_DOWN:
-                if(!myAnt.hasFood()){
+                if(!myAnt.hasFood()) {
                     // Ant had no food to drop
-                    reward = Reward.FOOD_DROP_DOWN_FAIL_NO_FOOD;
-                }else{
-                    // Drop food onto the ground
-                    currentCell.setFood(currentCell.getFood() + 1);
+                    sc.reward += Reward.FOOD_DROP_DOWN_FAIL_NO_FOOD;
+                } else {
                     myAnt.setHasFood(false);
-
                     // negative reward if the agent drops food on any other field
                     // than the starting point
-                    if(currentCell.getType() != CellType.START){
-                        reward = Reward.FOOD_DROP_DOWN_FAIL_NOT_START;
-                        done = true;
-                    }else{
-                        reward = Reward.FOOD_DROP_DOWN_SUCCESS;
+                    if(currentCell.getType() != CellType.START) {
+                        sc.reward += Reward.FOOD_DROP_DOWN_FAIL_NOT_START;
+                        // Drop food onto the ground
+                        currentCell.setFood(currentCell.getFood() + 1);
+                    } else {
+                        sc.reward = Reward.FOOD_DROP_DOWN_SUCCESS;
                         myAnt.setPoints(myAnt.getPoints() + 1);
-                        checkCompletion = true;
+                        sc.checkCompletion = true;
                     }
                 }
                 break;
@@ -121,24 +119,33 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
         }
 
         // movement action was selected
-        if(!stayOnCell){
-            if(!isInGrid(potentialNextPos)){
-                stayOnCell = true;
-                reward = Reward.RAN_INTO_WALL;
-            }else if(hitObstacle(potentialNextPos)){
-                stayOnCell = true;
-                reward = Reward.RAN_INTO_OBSTACLE;
+        if(!sc.stayOnCell) {
+            if(!isInGrid(sc.potentialNextPos)) {
+                sc.stayOnCell = true;
+                sc.reward += Reward.RAN_INTO_WALL;
+            } else if(hitObstacle(sc.potentialNextPos)) {
+                sc.stayOnCell = true;
+                sc.reward += Reward.RAN_INTO_OBSTACLE;
             }
         }
 
+        return sc;
+    }
+
+    @Override
+    public StepResultEnvironment step(AntAction action){
+        AntObservation observation;
+        State newState;
+
+        StepCalculation sc = processStep(action);
+
         // valid movement
-        if(!stayOnCell){
-            myAnt.getPos().setLocation(potentialNextPos);
+        if(!sc.stayOnCell) {
+            myAnt.getPos().setLocation(sc.potentialNextPos);
             if(antAgent.getCell(myAnt.getPos()).getType() == CellType.UNKNOWN){
                 // the ant will move to a cell that was previously unknown
-                reward = Reward.UNKNOWN_FIELD_EXPLORED;
-            }else{
-                reward = 0;
+                // TODO: not optimal for going straight for food
+                // sc.reward = Reward.UNKNOWN_FIELD_EXPLORED;
             }
         }
 
@@ -148,31 +155,34 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
         // let the ant agent process the observation to create a valid markov state
         newState = antAgent.feedObservation(observation);
 
-        if(checkCompletion){
-            done = grid.isAllFoodCollected();
+        if(sc.checkCompletion) {
+            sc.done = grid.isAllFoodCollected();
         }
 
-
-        /*
-        if(!done){
-            reward = -1;
-        }
-        */
         if(++tick == maxEpisodeTicks){
-            done = true;
+            sc.done = true;
         }
 
-
-        StepResultEnvironment result = new StepResultEnvironment(newState, reward, done, info);
-        return result;
+        return new StepResultEnvironment(newState, sc.reward, sc.done, sc.info);
     }
 
-    private boolean isInGrid(Point pos){
+    protected boolean isInGrid(Point pos) {
         return pos.x >= 0 && pos.x < grid.getWidth() && pos.y >= 0 && pos.y < grid.getHeight();
     }
 
-    private boolean hitObstacle(Point pos){
+    protected boolean hitObstacle(Point pos) {
         return grid.getCell(pos).getType() == CellType.OBSTACLE;
+    }
+
+    protected class StepCalculation {
+        double reward;
+        String info;
+        boolean done;
+        Point potentialNextPos = new Point(myAnt.getPos().x, myAnt.getPos().y);
+        boolean stayOnCell = true;
+        // flag to enable a check if all food has been collected only fired if food was dropped
+        // on the starting position
+        boolean checkCompletion = false;
     }
 
     public State reset() {
@@ -189,6 +199,7 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
     public void setMaxEpisodeLength(int maxTicks){
         this.maxEpisodeTicks = maxTicks;
     }
+
     public Point getSpawningPoint(){
         return grid.getStartPoint();
     }
