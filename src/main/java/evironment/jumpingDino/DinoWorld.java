@@ -44,7 +44,7 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
     @Override
     public StepResultEnvironment step(DinoAction action) {
         boolean done = false;
-        int reward = 1;
+        int reward = 0;
 
         if(action == DinoAction.JUMP){
             dino.jump();
@@ -68,7 +68,7 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
             spawnNewObstacle();
         }
         if(ranIntoObstacle()) {
-            reward = 0;
+            reward = -1;
             done = true;
         }
 

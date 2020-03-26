@@ -64,8 +64,8 @@ public class Grid {
             if(potFieldType != CellType.START && grid[potFood.x][potFood.y].getFood() == 0 && potFieldType != CellType.OBSTACLE) {
                 grid[potFood.x][potFood.y].setFood(1);
                 foodSpawned = true;
-                System.out.println("spawned new food at " + potFood);
-                System.out.println(initialGrid[potFood.x][potFood.y]);
+               // System.out.println("spawned new food at " + potFood);
+               // System.out.println(initialGrid[potFood.x][potFood.y]);
             }
         }
     }
