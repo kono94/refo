@@ -16,7 +16,7 @@ import java.nio.file.StandardOpenOption;
 
 public class DinoSampling {
     public static final float f =0.05f;
-    public static final String FILE_NAME = "converge.txt";
+    public static final String FILE_NAME = "convergenceAdvancedMCnegRew.txt";
     public static void main(String[] args) {
         File file = new File(FILE_NAME);
         try {
