@@ -15,18 +15,26 @@ import java.util.Random;
  */
 public class RNG {
     private static Random rng;
+    private static Random rngEnv;
     private static int seed = 123;
     static {
         rng = new Random();
         rng.setSeed(seed);
+        rngEnv = new Random();
+        rngEnv.setSeed(seed);
     }
 
     public static Random getRandom() {
         return rng;
     }
+    public static Random getRandomEnv() {
+        return rngEnv;
+    }
 
     public static void setSeed(int seed){
         RNG.seed = seed;
         rng.setSeed(seed);
+        rngEnv = new Random();
+        rngEnv.setSeed(seed);
     }
 }

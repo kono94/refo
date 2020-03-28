@@ -1,7 +1,28 @@
 # Libraries
 library(ggplot2)
 library(matrixStats)
-# file.choose()
+ta  <- as.matrix(read.table(file.choose(), sep=",", header = FALSE))
+ta <- t(ta)
+dim(ta)
+head(ta)
+
+# Create dummy data
+data <- data.frame(
+  y=ta[,1],
+  y2=ta[,2],
+  y3=ta[,3],
+  y4=ta[,4],
+  x=seq(1, length(ta))
+)
+ggplot(data, aes(x)) +
+  geom_line(aes(y = y, colour = "var0")) + 
+  geom_line(aes(y = y2, colour = "var1")) +
+  geom_line(aes(y = y3, colour = "var2")) +
+  geom_line(aes(y = y4, colour = "var3")) +
+  scale_x_log10( breaks=c(1,5,10,15,20,50,100,200), limits=c(1,200) )
+
+plot(ta, x=x*1000, log="x", type="o")
+
 convergence <- read.csv(file.choose(), header=FALSE, row.names=1)
 
 sds <- rowSds(sapply(convergence[,-1], `length<-`, max(lengths(convergence[,-1]))), na.rm=TRUE)

@@ -29,7 +29,7 @@ public class Grid {
                 initialGrid[x][y] = new Cell(new Point(x, y), CellType.FREE);
             }
         }
-        start = new Point(RNG.getRandom().nextInt(width), RNG.getRandom().nextInt(height));
+        start = new Point(RNG.getRandomEnv().nextInt(width), RNG.getRandomEnv().nextInt(height));
         initialGrid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
         spawnNewFood(initialGrid);
         spawnObstacles();
@@ -58,8 +58,8 @@ public class Grid {
         Point potFood = new Point(0, 0);
         CellType potFieldType;
         while(!foodSpawned) {
-            potFood.x = RNG.getRandom().nextInt(width);
-            potFood.y = RNG.getRandom().nextInt(height);
+            potFood.x = RNG.getRandomEnv().nextInt(width);
+            potFood.y = RNG.getRandomEnv().nextInt(height);
             potFieldType = grid[potFood.x][potFood.y].getType();
             if(potFieldType != CellType.START && grid[potFood.x][potFood.y].getFood() == 0 && potFieldType != CellType.OBSTACLE) {
                 grid[potFood.x][potFood.y].setFood(1);

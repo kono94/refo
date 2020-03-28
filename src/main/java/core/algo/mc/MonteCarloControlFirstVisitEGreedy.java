@@ -40,16 +40,9 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
 
-    // t
-    private float epsilon;
-    // t
-    private Policy<A> greedyPolicy = new GreedyPolicy<>();
-
 
     public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
         super(environment, actionSpace, discountFactor, delay);
-        // t
-        this.epsilon = epsilon;
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
         this.stateActionTable = new DeterministicStateActionTable<>(this.actionSpace);
         returnSum = new HashMap<>();
@@ -74,12 +67,7 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
 
         while(envResult == null || !envResult.isDone()) {
             Map<A, Double> actionValues = stateActionTable.getActionValues(state);
-            A chosenAction;
-            if(currentEpisode % 2 == 1){
-                chosenAction = greedyPolicy.chooseAction(actionValues);
-            }else{
-                chosenAction = policy.chooseAction(actionValues);
-            }
+            A  chosenAction = policy.chooseAction(actionValues);
 
             envResult = environment.step(chosenAction);
             State nextState = envResult.getState();
@@ -96,12 +84,9 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
             }
             timestamp++;
             dispatchStepEnd();
-            if(converged) return;
         }
 
-        if(currentEpisode % 2 == 1){
-            return;
-        }
+
 
         //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
         Set<Pair<State, A>> stateActionPairs = new LinkedHashSet<>();

@@ -31,7 +31,7 @@ public class DinoWorldAdvanced extends DinoWorld{
     protected void spawnNewObstacle() {
         int dx;
         int xSpawn;
-        double ran = RNG.getRandom().nextDouble();
+        double ran = RNG.getRandomEnv().nextDouble();
         if(ran < 0.25){
             dx = -(int) (0.35 * Config.OBSTACLE_SPEED);
         }else if(ran < 0.5){
@@ -41,7 +41,7 @@ public class DinoWorldAdvanced extends DinoWorld{
         } else{
             dx = -(int) (3.5 * Config.OBSTACLE_SPEED);
         }
-        double ran2 = RNG.getRandom().nextDouble();
+        double ran2 = RNG.getRandomEnv().nextDouble();
         if(ran2 < 0.25) {
             // randomly spawning more right outside of the screen
             xSpawn = Config.FRAME_WIDTH + Config.FRAME_WIDTH + Config.OBSTACLE_SIZE;

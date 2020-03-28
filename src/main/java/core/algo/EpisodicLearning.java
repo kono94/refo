@@ -105,8 +105,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         timestamp++;
         timestampCurrentEpisode++;
         // TODO: more sophisticated way to check convergence
-        if(timestampCurrentEpisode > 30000000){
-            converged = true;
+        if(false){
             // t
             File file = new File(DinoSampling.FILE_NAME);
             try {
@@ -114,9 +113,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("converged after: " + currentEpisode/2 + " episode!");
-            episodesToLearn.set(0);
-            dispatchLearningEnd();
+           // System.out.println("converged after: " + currentEpisode/2 + " episode!");
         }
     }
 

@@ -5,7 +5,15 @@ import core.algo.EpisodicLearning;
 import core.policy.EpsilonGreedyPolicy;
 import core.policy.GreedyPolicy;
 import core.policy.Policy;
+import evironment.antGame.Reward;
+import example.ContinuousAnt;
+import example.DinoSampling;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearning<A> {
@@ -37,25 +45,43 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
 
 
         sumOfRewards = 0;
+        int timestampTilFood = 0;
+        int rewardsPer1000 = 0;
+        int foodCollected = 0;
         while(envResult == null || !envResult.isDone()) {
             actionValues = stateActionTable.getActionValues(state);
-            A action;
-            if(currentEpisode % 2 == 0){
-                action = greedyPolicy.chooseAction(actionValues);
-            }else{
-                action = policy.chooseAction(actionValues);
-            }
-            if(converged) return;
+            A action = policy.chooseAction(actionValues);
+
             // Take a step
             envResult = environment.step(action);
             double reward = envResult.getReward();
             State nextState = envResult.getState();
             sumOfRewards += reward;
-            if(currentEpisode % 2 == 0){
-                state = nextState;
-                dispatchStepEnd();
-                continue;
+
+            rewardsPer1000+=reward;
+            timestampTilFood++;
+
+            if(foodCollected == 10000){
+                File file = new File(ContinuousAnt.FILE_NAME);
+                try {
+                    Files.writeString(Path.of(file.getPath()),  "\n", StandardOpenOption.APPEND);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
             }
+            if(reward == Reward.FOOD_DROP_DOWN_SUCCESS){
+                foodCollected++;
+                File file = new File(ContinuousAnt.FILE_NAME);
+                try {
+                    Files.writeString(Path.of(file.getPath()),  timestampTilFood + ",", StandardOpenOption.APPEND);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                timestampTilFood = 0;
+                rewardsPer1000 = 0;
+            }
+
             // Q Update
             double currentQValue = stateActionTable.getActionValues(state).get(action);
             // maxQ(S', a);

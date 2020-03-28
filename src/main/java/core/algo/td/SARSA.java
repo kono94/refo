@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class SARSA<A extends Enum> extends EpisodicLearning<A> {
     private float alpha;
-    private Policy<A> greedyPolicy = new GreedyPolicy<>();
 
     public SARSA(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, float learningRate, int delay) {
         super(environment, actionSpace, discountFactor, delay);
@@ -35,18 +34,13 @@ public class SARSA<A extends Enum> extends EpisodicLearning<A> {
 
         StepResultEnvironment envResult = null;
         Map<A, Double> actionValues = stateActionTable.getActionValues(state);
-        A action;
-        if(currentEpisode % 2 == 1){
-            action = greedyPolicy.chooseAction(actionValues);
-        }else{
-            action = policy.chooseAction(actionValues);
-        }
+        A  action = policy.chooseAction(actionValues);
+
         //A action = policy.chooseAction(actionValues);
 
         sumOfRewards = 0;
         while(envResult == null || !envResult.isDone()) {
 
-            if(converged) return;
             // Take a step
             envResult = environment.step(action);
             sumOfRewards += envResult.getReward();
@@ -56,19 +50,8 @@ public class SARSA<A extends Enum> extends EpisodicLearning<A> {
             // Pick next action
             actionValues = stateActionTable.getActionValues(nextState);
 
-            A nextAction;
-            if(currentEpisode % 2 == 1){
-                nextAction = greedyPolicy.chooseAction(actionValues);
-            }else{
-                nextAction = policy.chooseAction(actionValues);
-            }
-            //A nextAction = policy.chooseAction(actionValues);
-            if(currentEpisode % 2 == 1){
-                state = nextState;
-                action = nextAction;
-                dispatchStepEnd();
-                continue;
-            }
+            A  nextAction = policy.chooseAction(actionValues);
+
             // td update
             // target = reward + gamma * Q(nextState, nextAction)
             double currentQValue = stateActionTable.getActionValues(state).get(action);
