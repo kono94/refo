@@ -48,6 +48,8 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
         int timestampTilFood = 0;
         int rewardsPer1000 = 0;
         int foodCollected = 0;
+        int iterations = 0;
+        int foodTimestampsTotal= 0;
         while(envResult == null || !envResult.isDone()) {
             actionValues = stateActionTable.getActionValues(state);
             A action = policy.chooseAction(actionValues);
@@ -57,11 +59,10 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
             double reward = envResult.getReward();
             State nextState = envResult.getState();
             sumOfRewards += reward;
-
             rewardsPer1000+=reward;
             timestampTilFood++;
 
-            if(foodCollected == 10000){
+          /*  if(iterations == 100){
                 File file = new File(ContinuousAnt.FILE_NAME);
                 try {
                     Files.writeString(Path.of(file.getPath()),  "\n", StandardOpenOption.APPEND);
@@ -69,17 +70,46 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
                     e.printStackTrace();
                 }
                 return;
-            }
+            }*/
+
+
             if(reward == Reward.FOOD_DROP_DOWN_SUCCESS){
                 foodCollected++;
-                File file = new File(ContinuousAnt.FILE_NAME);
-                try {
-                    Files.writeString(Path.of(file.getPath()),  timestampTilFood + ",", StandardOpenOption.APPEND);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                foodTimestampsTotal += timestampTilFood;
+                if(foodCollected % 1000 == 0){
+                    System.out.println(foodTimestampsTotal/1000f);
+                    File file = new File(ContinuousAnt.FILE_NAME);
+                    try {
+                        Files.writeString(Path.of(file.getPath()),  foodTimestampsTotal/1000f +",", StandardOpenOption.APPEND);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    foodTimestampsTotal = 0;
                 }
+                if(foodCollected == 1000){
+                    ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.15f);
+                }
+                if(foodCollected == 2000){
+                    ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.10f);
+                }
+                if(foodCollected == 3000){
+                    ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.05f);
+                }
+                if(foodCollected == 4000){
+                    System.out.println("final 0 expl");
+                    ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.00f);
+                }
+                if(foodCollected == 15000){
+                    File file = new File(ContinuousAnt.FILE_NAME);
+                    try {
+                        Files.writeString(Path.of(file.getPath()),  "\n", StandardOpenOption.APPEND);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                iterations++;
                 timestampTilFood = 0;
-                rewardsPer1000 = 0;
             }
 
             // Q Update

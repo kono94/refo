@@ -17,9 +17,9 @@ public class JumpingDino {
                 DinoAction.values());
 
         rl.setDelay(0);
-        rl.setDiscountFactor(1f);
+        rl.setDiscountFactor(9f);
         rl.setEpsilon(0.05f);
-        rl.setLearningRate(1f);
+        rl.setLearningRate(0.8f);
         rl.setNrOfEpisodes(100000);
         rl.start();
     }
