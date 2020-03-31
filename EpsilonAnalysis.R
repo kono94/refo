@@ -20,4 +20,6 @@ convergence.m <- melt(convergence, id.vars = "groups")
 ggplot(data) +
   geom_bar(aes(x=names, y=means, fill=means), stat="identity", colour="black", alpha=0.8) +
   geom_errorbar( aes(x=names, ymin=means, ymax=means+sds), width=0.4, colour="black", alpha=0.8, size=0.6) +
-  xlab("Epsilon") + ylab("Ø Episoden bis Konvergenz") 
+  ylim(0,104000) +
+  xlab("Epsilon") + ylab("Ø Episoden bis Konvergenz") +
+  theme_bw(base_size = 24)

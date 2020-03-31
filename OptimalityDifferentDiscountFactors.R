@@ -19,8 +19,7 @@ data <- data.frame(
   x=seq(1, length(ta[,1]))
 )
 ggplot(data, aes(x*1000)) +
-  labs(title="Durchschnittliche Zeitstempel pro gesammeltes Futter (Lernrate = 0.9)",
-       x ="Gesamtanzahl gesammeltes Futter", y = "Ø Zeitstempel pro Futter (log)", color = "Diskontierungsfaktor") +
+  labs( x ="Gesamtanzahl gesammeltes Futter", y = "Ø Zeitstempel pro Futter (log)", color = "Diskontierungsfaktor") +
   scale_y_log10()+
   geom_hline(yintercept=23, linetype="dashed")+
   geom_text(aes(0,23,label = "opt", vjust = -1)) +
@@ -31,7 +30,8 @@ ggplot(data, aes(x*1000)) +
   geom_line(aes(y = y5, colour = "0.5"), size=1)+
   geom_line(aes(y = y6, colour = "0.3"), size=1) +
   geom_line(aes(y = y7, colour = "0.1"), size=1) +
-  geom_line(aes(y = y8, colour = "0.05"), size=1) 
+  geom_line(aes(y = y8, colour = "0.05"), size=1) +
+  theme_bw(base_size = 24)
 
   
   

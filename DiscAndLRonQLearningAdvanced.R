@@ -26,31 +26,31 @@ data <- data.frame(
   x=seq(1, length(ta[,1]))
 )
 ggplot(data, aes(x*1000)) +
-  labs(title="Diskontierungsfaktor = 0.99",
-       x ="Zeitstempel", y = "Ø Belohnung pro Zeitstempel", color = "Lernrate") +
+  labs( x ="Zeitstempel", y = "Ø Belohnung pro Zeitstempel", color = "Lernrate") +
   ylim(-1.5,0.6) +
   geom_line(aes(y = y, colour = "0.1"), size=1)+
   geom_line(aes(y = y2, colour = "0.3"), size=1) +
   geom_line(aes(y = y3, colour = "0.5"), size=1) +
   geom_line(aes(y = y4, colour = "0.7"), size=1) +
-  geom_line(aes(y = y5, colour = "0.9"), size=1)
+  geom_line(aes(y = y5, colour = "0.9"), size=1) +
+  theme_bw(base_size = 24)
 
 ggplot(data, aes(x*1000)) +
-  labs(title="Diskontierungsfaktor = 0.9",
-       x ="Zeitstempel", y = "Ø Belohnung pro Zeitstempel", color = "Lernrate") +
+  labs(x ="Zeitstempel", y = "Ø Belohnung pro Zeitstempel", color = "Lernrate") +
   ylim(-1.5,0.6) +
   geom_line(aes(y = y6, colour = "0.1"), size=1) +
   geom_line(aes(y = y7, colour = "0.3"), size=1) +
   geom_line(aes(y = y8, colour = "0.5"), size=1) +
   geom_line(aes(y = y9, colour = "0.7"), size=1) +
-  geom_line(aes(y = y10, colour = "0.9"), size=1)
+  geom_line(aes(y = y10, colour = "0.9"), size=1) +
+  theme_bw(base_size = 24)
 
 ggplot(data, aes(x*1000) ) +
-  labs(title="Diskontierungsfaktor = 0.5",
-       x ="Zeitstempel", y = "Ø Belohnung pro Zeitstempel", color = "Lernrate") +
+  labs(x ="Zeitstempel", y = "Ø Belohnung pro Zeitstempel", color = "Lernrate") +
   ylim(-1.5,0.6) +
   geom_line(aes(y = y11, colour = "0.1"), size=1) +
   geom_line(aes(y = y12, colour = "0.3"), size=1) +
   geom_line(aes(y = y13, colour = "0.5"), size=1) +
   geom_line(aes(y = y14, colour = "0.7"), size=1) +
-  geom_line(aes(y = y15, colour = "0.9"), size=1) 
+  geom_line(aes(y = y15, colour = "0.9"), size=1) +
+  theme_bw(base_size = 24)
