@@ -3,10 +3,8 @@ package example;
 import core.RNG;
 import core.algo.Method;
 import core.controller.RLController;
-import core.controller.RLControllerGUI;
 import evironment.antGame.AntAction;
 import evironment.antGame.AntWorldContinuous;
-import evironment.antGame.AntWorldContinuousOriginalState;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +29,7 @@ public class ContinuousAnt {
         rl.setNrOfEpisodes(1);
         //0.99 0.9 0.5
         //0.99 0.95 0.9 0.7 0.5 0.3 0.1
-        rl.setDiscountFactor(0.05f);
+        rl.setDiscountFactor(0.1f);
         // 0.1, 0.3, 0.5, 0.7 0.9
         rl.setLearningRate(0.9f);
         rl.setEpsilon(0.2f);

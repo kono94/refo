@@ -1,6 +1,7 @@
 package evironment.antGame;
 
 public class Reward {
+    public static final double DEFAULT_REWARD = -1;
     public static final double FOOD_PICK_UP_SUCCESS = 0;
     public static final double FOOD_PICK_UP_FAIL_NO_FOOD = -1;
     public static final double FOOD_PICK_UP_FAIL_HAS_FOOD_ALREADY = -1;

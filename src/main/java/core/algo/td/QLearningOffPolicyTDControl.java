@@ -7,7 +7,6 @@ import core.policy.GreedyPolicy;
 import core.policy.Policy;
 import evironment.antGame.Reward;
 import example.ContinuousAnt;
-import example.DinoSampling;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +76,7 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
                 foodCollected++;
                 foodTimestampsTotal += timestampTilFood;
                 if(foodCollected % 1000 == 0){
-                    System.out.println(foodTimestampsTotal/1000f);
+                    System.out.println(foodTimestampsTotal / 1000f + " " + timestampCurrentEpisode);
                     File file = new File(ContinuousAnt.FILE_NAME);
                     try {
                         Files.writeString(Path.of(file.getPath()),  foodTimestampsTotal/1000f +",", StandardOpenOption.APPEND);

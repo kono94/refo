@@ -54,7 +54,7 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
 
     protected StepCalculation processStep(AntAction action) {
         StepCalculation sc = new StepCalculation();
-        sc.reward = -1;
+        sc.reward = Reward.DEFAULT_REWARD;
         sc.info = "";
         sc.done = false;
         Cell currentCell = grid.getCell(myAnt.getPos());

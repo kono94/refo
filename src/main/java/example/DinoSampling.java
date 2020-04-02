@@ -6,7 +6,6 @@ import core.controller.RLController;
 import core.controller.RLControllerGUI;
 import evironment.jumpingDino.DinoAction;
 import evironment.jumpingDino.DinoWorld;
-import evironment.jumpingDino.DinoWorldAdvanced;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,13 +33,13 @@ public class DinoSampling {
                 System.out.println("seed: " + i * 13);
                 RNG.setSeed(i * 13);
 
-                RLController<DinoAction> rl = new RLController<>(
-                        new DinoWorldAdvanced(),
-                        Method.Q_LEARNING_OFF_POLICY_CONTROL,
+                RLController<DinoAction> rl = new RLControllerGUI<>(
+                        new DinoWorld(),
+                        Method.MC_CONTROL_FIRST_VISIT,
                         DinoAction.values());
-                rl.setDelay(0);
-                rl.setDiscountFactor(0.99f);
-                rl.setEpsilon(f);
+                rl.setDelay(300);
+                rl.setDiscountFactor(1f);
+                rl.setEpsilon(0.5f);
                 rl.setLearningRate(0.9f);
                 rl.setNrOfEpisodes(400000);
                 rl.start();
