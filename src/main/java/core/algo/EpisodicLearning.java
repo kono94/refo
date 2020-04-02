@@ -5,7 +5,6 @@ import core.Environment;
 import core.LearningConfig;
 import core.StepResult;
 import core.listener.LearningListener;
-import core.policy.EpsilonGreedyPolicy;
 import example.DinoSampling;
 import lombok.Getter;
 import lombok.Setter;
@@ -125,6 +124,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     private void startLearning(){
         dispatchLearningStart();
         while(episodesToLearn.get() > 0){
+
             dispatchEpisodeStart();
             timestampCurrentEpisode = 0;
             nextEpisode();
