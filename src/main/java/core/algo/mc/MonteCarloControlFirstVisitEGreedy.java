@@ -8,37 +8,22 @@ import core.policy.Policy;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.io.*;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 /**
- * TODO: Major problem:
- * StateActionPairs are only unique accounting for their position in the episode.
- * For example:
- * <p>
- * startingState -> MOVE_LEFT : very first state action in the episode i = 1
- * image the agent does not collect the food and does not drop it onto start, the agent will receive
- * -1 for every timestamp hence (startingState -> MOVE_LEFT) will get a value of -10;
- * <p>
- * BUT image moving left from the starting position will have no impact on the state because
- * the agent ran into a wall. The known world stays the same.
- * Taking an action after that will have the exact same state but a different action
- * making the value of this stateActionPair -9 because the stateAction pair took place on the second
- * timestamp, summing up all remaining rewards will be -9...
- * <p>
- * How to encounter this problem?
- *
+ * Includes both variants of Monte-Carlo methods
+ * Default method is First-Visit.
+ * Change to Every-Visit by setting flag "useEveryVisit" in the constructor to true.
  * @param <A>
  */
 public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends EpisodicLearning<A> {
 
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
+    private boolean isEveryVisit;
 
     // t
     private float epsilon;
@@ -46,14 +31,19 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
     private Policy<A> greedyPolicy = new GreedyPolicy<>();
 
 
-    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
+    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay, boolean useEveryVisit) {
         super(environment, actionSpace, discountFactor, delay);
+        isEveryVisit = useEveryVisit;
         // t
         this.epsilon = epsilon;
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
         this.stateActionTable = new DeterministicStateActionTable<>(this.actionSpace);
         returnSum = new HashMap<>();
         returnCount = new HashMap<>();
+    }
+
+    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
+        this(environment, actionSpace, discountFactor, epsilon, delay, false);
     }
 
     public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
@@ -104,34 +94,46 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
         }
 
         //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
-        Set<Pair<State, A>> stateActionPairs = new LinkedHashSet<>();
+        HashMap<Pair<State, A>, List<Integer>> stateActionPairs = new LinkedHashMap<>();
 
+        int firstOccurrenceIndex = 0;
         for(StepResult<A> sr : episode) {
-            stateActionPairs.add(new ImmutablePair<>(sr.getState(), sr.getAction()));
+            Pair<State, A> pair = new ImmutablePair<>(sr.getState(), sr.getAction());
+            if(!stateActionPairs.containsKey(pair)) {
+                List<Integer> l = new ArrayList<>();
+                l.add(firstOccurrenceIndex);
+                stateActionPairs.put(pair, l);
+            }
+
+            /*
+            This is the only difference between First-Visit and Every-Visit.
+            When First-Visit is selected, only the first index of the occurrence is put into the list.
+            When Every-Visit is selected, every following occurrence is saved
+            into the list as well.
+             */
+            else if(isEveryVisit) {
+                stateActionPairs.get(pair).add(firstOccurrenceIndex);
+            }
+            ++firstOccurrenceIndex;
         }
-
         //System.out.println("stateActionPairs " + stateActionPairs.size());
-        for(Pair<State, A> stateActionPair : stateActionPairs) {
-            int firstOccurenceIndex = 0;
-            // find first occurance of state action pair
-            for(StepResult<A> sr : episode) {
-                if(stateActionPair.getKey().equals(sr.getState()) && stateActionPair.getValue().equals(sr.getAction())) {
-                    break;
+        for(Map.Entry<Pair<State, A>, List<Integer>> entry : stateActionPairs.entrySet()) {
+            Pair<State, A> stateActionPair = entry.getKey();
+            List<Integer> firstOccurrences = entry.getValue();
+            for(Integer firstOccurrencesIdx : firstOccurrences) {
+                double G = 0;
+                for(int l = firstOccurrencesIdx; l < episode.size(); ++l) {
+                    G += episode.get(l).getReward() * (Math.pow(discountFactor, l - firstOccurrencesIdx));
                 }
-                firstOccurenceIndex++;
+                // slick trick to add G to the entry.
+                // if the key does not exists, it will create a new entry with G as default value
+                returnSum.merge(stateActionPair, G, Double::sum);
+                returnCount.merge(stateActionPair, 1, Integer::sum);
+                stateActionTable.setValue(stateActionPair.getKey(), stateActionPair.getValue(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
             }
-
-            double G = 0;
-            for(int l = firstOccurenceIndex; l < episode.size(); ++l) {
-                G += episode.get(l).getReward() * (Math.pow(discountFactor, l - firstOccurenceIndex));
-            }
-            // slick trick to add G to the entry.
-            // if the key does not exists, it will create a new entry with G as default value
-            returnSum.merge(stateActionPair, G, Double::sum);
-            returnCount.merge(stateActionPair, 1, Integer::sum);
-            stateActionTable.setValue(stateActionPair.getKey(), stateActionPair.getValue(), returnSum.get(stateActionPair) / returnCount.get(stateActionPair));
         }
     }
+
 
     @Override
     public void save(ObjectOutputStream oos) throws IOException {

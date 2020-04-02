@@ -51,7 +51,11 @@ public class RLController<A extends Enum> implements LearningListener {
             case MC_CONTROL_FIRST_VISIT:
                 learning = new MonteCarloControlFirstVisitEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
                 break;
-            case SARSA_EPISODIC:
+            case MC_CONTROL_EVERY_VISIT:
+                learning = new MonteCarloControlFirstVisitEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay, true);
+                break;
+
+            case SARSA_ON_POLICY_CONTROL:
                 learning = new SARSA<>(environment, discreteActionSpace, discountFactor, epsilon, learningRate, delay);
                 break;
             case Q_LEARNING_OFF_POLICY_CONTROL:
