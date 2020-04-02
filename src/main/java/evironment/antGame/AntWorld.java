@@ -134,9 +134,6 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
 
     @Override
     public StepResultEnvironment step(AntAction action){
-        AntObservation observation;
-        State newState;
-
         StepCalculation sc = processStep(action);
 
         // valid movement
@@ -149,11 +146,7 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
             }
         }
 
-        // get observation after action was computed
-        observation = new AntObservation(grid.getCell(myAnt.getPos()), myAnt.getPos(), myAnt.hasFood());
 
-        // let the ant agent process the observation to create a valid markov state
-        newState = antAgent.feedObservation(observation);
 
         if(sc.checkCompletion) {
             sc.done = grid.isAllFoodCollected();
@@ -163,7 +156,15 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
             sc.done = true;
         }
 
-        return new StepResultEnvironment(newState, sc.reward, sc.done, sc.info);
+        return new StepResultEnvironment(generateReturnState(), sc.reward, sc.done, sc.info);
+    }
+
+    protected State generateReturnState(){
+        // get observation after action was computed
+        AntObservation observation = new AntObservation(grid.getCell(myAnt.getPos()), myAnt.getPos(), myAnt.hasFood());
+
+        // let the ant agent process the observation to create a valid markov state
+        return antAgent.feedObservation(observation);
     }
 
     protected boolean isInGrid(Point pos) {

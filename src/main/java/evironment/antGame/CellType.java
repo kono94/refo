@@ -1,6 +1,7 @@
 package evironment.antGame;
 
-public enum CellType {
+
+public enum CellType{
     START,
     FREE,
     OBSTACLE,

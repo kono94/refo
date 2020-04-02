@@ -6,12 +6,13 @@ import core.controller.RLController;
 import core.controller.RLControllerGUI;
 import evironment.antGame.AntAction;
 import evironment.antGame.AntWorldContinuous;
+import evironment.antGame.AntWorldContinuousOriginalState;
 
 public class ContinuousAnt {
     public static void main(String[] args) {
         RNG.setSeed(56);
         RLController<AntAction> rl = new RLControllerGUI<>(
-                new AntWorldContinuous(8, 8),
+                new AntWorldContinuousOriginalState(8, 8),
                 Method.Q_LEARNING_OFF_POLICY_CONTROL,
                 AntAction.values());
 

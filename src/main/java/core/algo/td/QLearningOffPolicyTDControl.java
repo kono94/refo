@@ -39,14 +39,23 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
         sumOfRewards = 0;
         while(envResult == null || !envResult.isDone()) {
             actionValues = stateActionTable.getActionValues(state);
-            A action = policy.chooseAction(actionValues);
-
+            A action;
+            if(currentEpisode % 2 == 0){
+                action = greedyPolicy.chooseAction(actionValues);
+            }else{
+                action = policy.chooseAction(actionValues);
+            }
+            if(converged) return;
             // Take a step
             envResult = environment.step(action);
             double reward = envResult.getReward();
             State nextState = envResult.getState();
             sumOfRewards += reward;
-
+            if(currentEpisode % 2 == 0){
+                state = nextState;
+                dispatchStepEnd();
+                continue;
+            }
             // Q Update
             double currentQValue = stateActionTable.getActionValues(state).get(action);
             // maxQ(S', a);
