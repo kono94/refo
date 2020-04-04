@@ -17,11 +17,12 @@ public class RNG {
     private static Random rng;
     private static Random rngEnv;
     private static int seed = 123;
+    private static int envSeed = 13;
     static {
         rng = new Random();
         rng.setSeed(seed);
         rngEnv = new Random();
-        rngEnv.setSeed(seed);
+        rngEnv.setSeed(13);
     }
 
     public static Random getRandom() {
@@ -34,7 +35,6 @@ public class RNG {
     public static void setSeed(int seed){
         RNG.seed = seed;
         rng.setSeed(seed);
-        rngEnv = new Random();
-        rngEnv.setSeed(seed);
+        rngEnv.setSeed(13);
     }
 }

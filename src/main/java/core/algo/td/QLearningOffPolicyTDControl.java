@@ -32,6 +32,7 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
 
     @Override
     protected void nextEpisode() {
+
         State state = environment.reset();
         try {
             Thread.sleep(delay);
@@ -72,19 +73,19 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
             }*/
 
 
-            if(reward == Reward.FOOD_DROP_DOWN_SUCCESS){
+            if(reward == Reward.FOOD_DROP_DOWN_SUCCESS) {
                 foodCollected++;
                 foodTimestampsTotal += timestampTilFood;
-                if(foodCollected % 1000 == 0){
-                    System.out.println(foodTimestampsTotal / 1000f + " " + timestampCurrentEpisode);
-                    File file = new File(ContinuousAnt.FILE_NAME);
+                //System.out.println(foodCollected + " " + timestampCurrentEpisode);
+                File file = new File(ContinuousAnt.FILE_NAME);
+                if(foodCollected % 1000 == 0) {
                     try {
-                        Files.writeString(Path.of(file.getPath()),  foodTimestampsTotal/1000f +",", StandardOpenOption.APPEND);
+                        Files.writeString(Path.of(file.getPath()), timestampCurrentEpisode + ",", StandardOpenOption.APPEND);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    foodTimestampsTotal = 0;
                 }
+                foodTimestampsTotal = 0;
                 if(foodCollected == 1000){
                     ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.15f);
                 }
@@ -98,8 +99,7 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
                     System.out.println("final 0 expl");
                     ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.00f);
                 }
-                if(foodCollected == 15000){
-                    File file = new File(ContinuousAnt.FILE_NAME);
+                if(foodCollected == 30000) {
                     try {
                         Files.writeString(Path.of(file.getPath()),  "\n", StandardOpenOption.APPEND);
                     } catch (IOException e) {
