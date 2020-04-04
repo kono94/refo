@@ -84,10 +84,10 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
             case PICK_UP:
                 if(myAnt.hasFood()) {
                     // Ant tries to pick up food but can only hold one piece
-                    sc.reward += Reward.FOOD_PICK_UP_FAIL_HAS_FOOD_ALREADY;
+                    sc.reward = Reward.FOOD_PICK_UP_FAIL_HAS_FOOD_ALREADY;
                 } else if(currentCell.getFood() == 0) {
                     // Ant tries to pick up food on cell that has no food on it
-                    sc.reward += Reward.FOOD_PICK_UP_FAIL_NO_FOOD;
+                    sc.reward = Reward.FOOD_PICK_UP_FAIL_NO_FOOD;
                 } else if(currentCell.getFood() > 0) {
                     // Ant successfully picks up food
                     currentCell.setFood(currentCell.getFood() - 1);
@@ -98,13 +98,13 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
             case DROP_DOWN:
                 if(!myAnt.hasFood()) {
                     // Ant had no food to drop
-                    sc.reward += Reward.FOOD_DROP_DOWN_FAIL_NO_FOOD;
+                    sc.reward = Reward.FOOD_DROP_DOWN_FAIL_NO_FOOD;
                 } else {
                     myAnt.setHasFood(false);
                     // negative reward if the agent drops food on any other field
                     // than the starting point
                     if(currentCell.getType() != CellType.START) {
-                        sc.reward += Reward.FOOD_DROP_DOWN_FAIL_NOT_START;
+                        sc.reward = Reward.FOOD_DROP_DOWN_FAIL_NOT_START;
                         // Drop food onto the ground
                         currentCell.setFood(currentCell.getFood() + 1);
                     } else {
@@ -122,10 +122,10 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
         if(!sc.stayOnCell) {
             if(!isInGrid(sc.potentialNextPos)) {
                 sc.stayOnCell = true;
-                sc.reward += Reward.RAN_INTO_WALL;
+                sc.reward = Reward.RAN_INTO_WALL;
             } else if(hitObstacle(sc.potentialNextPos)) {
                 sc.stayOnCell = true;
-                sc.reward += Reward.RAN_INTO_OBSTACLE;
+                sc.reward = Reward.RAN_INTO_OBSTACLE;
             }
         }
 
