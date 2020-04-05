@@ -1,4 +1,4 @@
-#same speed and distance. ONLY DISTANCE TO OBSTACLE. 100 trials, rest did not convergec; MONTE CARLO
+#same speed and distance. ONLY DISTANCE TO OBSTACLE. 100 trials, rest did not converged!; MONTE CARLO
 0.05,8,64,62,15,84,5,72,183
 0.1,15,15,6,18,46,28,307
 0.15,177,20,12,9,21,4,6,65,173

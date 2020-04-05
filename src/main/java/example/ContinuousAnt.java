@@ -3,13 +3,12 @@ package example;
 import core.RNG;
 import core.algo.Method;
 import core.controller.RLController;
+import core.controller.RLControllerGUI;
 import evironment.antGame.AntAction;
 import evironment.antGame.AntWorldContinuous;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ContinuousAnt {
     public static final String FILE_NAME = "optDiscTimestampsNew.txt";
@@ -22,33 +21,21 @@ public class ContinuousAnt {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        List<Float> discValues = new ArrayList<>() {
-        };
-        discValues.add(0.05f);
-        discValues.add(0.1f);
-        discValues.add(0.3f);
-        discValues.add(0.5f);
-        discValues.add(0.7f);
-        discValues.add(0.9f);
-        discValues.add(0.95f);
-        discValues.add(0.99f);
-
-        for(float disc : discValues) {
             RNG.setSeed(13);
-            RLController<AntAction> rl = new RLController<>(
+        RLController<AntAction> rl = new RLControllerGUI<>(
                     new AntWorldContinuous(8, 8),
                     Method.Q_LEARNING_OFF_POLICY_CONTROL,
                     AntAction.values());
-            rl.setDelay(0);
+        rl.setDelay(20);
             rl.setNrOfEpisodes(1);
             //0.99 0.9 0.5
             //0.99 0.95 0.9 0.7 0.5 0.3 0.1
-            rl.setDiscountFactor(disc);
+        rl.setDiscountFactor(0.05f);
             // 0.1, 0.3, 0.5, 0.7 0.9
             rl.setLearningRate(0.9f);
             rl.setEpsilon(0.2f);
             rl.start();
-        }
+
 
     }
 }

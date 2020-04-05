@@ -76,16 +76,16 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
             if(reward == Reward.FOOD_DROP_DOWN_SUCCESS) {
                 foodCollected++;
                 foodTimestampsTotal += timestampTilFood;
-                //System.out.println(foodCollected + " " + timestampCurrentEpisode);
                 File file = new File(ContinuousAnt.FILE_NAME);
                 if(foodCollected % 1000 == 0) {
+                    System.out.println(foodTimestampsTotal / 1000f + " " + timestampCurrentEpisode);
                     try {
-                        Files.writeString(Path.of(file.getPath()), timestampCurrentEpisode + ",", StandardOpenOption.APPEND);
+                        Files.writeString(Path.of(file.getPath()), foodTimestampsTotal / 1000f + ",", StandardOpenOption.APPEND);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    foodTimestampsTotal = 0;
                 }
-                foodTimestampsTotal = 0;
                 if(foodCollected == 1000){
                     ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.15f);
                 }
@@ -105,7 +105,7 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    return;
+                    // return;
                 }
                 iterations++;
                 timestampTilFood = 0;

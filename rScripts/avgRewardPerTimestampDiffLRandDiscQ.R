@@ -6,7 +6,7 @@ ta <- t(ta)
 dim(ta)
 head(ta)
 
-# Create dummy data
+# Create data frame
 data <- data.frame(
   y=ta[,1],
   y2=ta[,2],
