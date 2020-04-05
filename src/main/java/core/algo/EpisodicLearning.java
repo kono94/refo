@@ -5,7 +5,6 @@ import core.Environment;
 import core.LearningConfig;
 import core.StepResult;
 import core.listener.LearningListener;
-import core.policy.EpsilonGreedyPolicy;
 import example.DinoSampling;
 import lombok.Getter;
 import lombok.Setter;
@@ -105,7 +104,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         timestamp++;
         timestampCurrentEpisode++;
         // TODO: more sophisticated way to check convergence
-        if(timestampCurrentEpisode > 30000000){
+        if(timestampCurrentEpisode > 50000) {
             converged = true;
             // t
             File file = new File(DinoSampling.FILE_NAME);
@@ -128,6 +127,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     private void startLearning(){
         dispatchLearningStart();
         while(episodesToLearn.get() > 0){
+
             dispatchEpisodeStart();
             timestampCurrentEpisode = 0;
             nextEpisode();
