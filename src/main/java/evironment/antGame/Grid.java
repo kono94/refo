@@ -16,6 +16,7 @@ public class Grid {
         this.height = height;
         grid = new Cell[width][height];
         initialGrid = new Cell[width][height];
+        start = new Point(Constants.START_X, Constants.START_Y);
         initRandomWorld();
     }
 
@@ -29,10 +30,11 @@ public class Grid {
                 initialGrid[x][y] = new Cell(new Point(x, y), CellType.FREE);
             }
         }
-        start = new Point(RNG.getEnvRandom().nextInt(width), RNG.getEnvRandom().nextInt(height));
-        initialGrid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
         spawnNewFood(initialGrid);
         spawnObstacles();
+        initialGrid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
+        ;
+
     }
 
     //TODO
@@ -53,7 +55,7 @@ public class Grid {
     /**
      * Spawns one additional food on a random field EXCEPT for the starting position
      */
-    public void spawnNewFood(Cell[][] grid) {
+    private void spawnNewFood(Cell[][] grid) {
         boolean foodSpawned = false;
         Point potFood = new Point(0, 0);
         CellType potFieldType;
