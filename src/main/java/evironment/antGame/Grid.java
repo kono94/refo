@@ -33,7 +33,6 @@ public class Grid {
         spawnNewFood(initialGrid);
         spawnObstacles();
         initialGrid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
-        ;
 
     }
 

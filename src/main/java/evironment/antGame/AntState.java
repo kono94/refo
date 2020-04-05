@@ -86,12 +86,12 @@ public class AntState implements State, Visualizable {
     public JComponent visualize() {
         return new JScrollPane() {
             private int cellSize;
-            private final int paneWidth = 500;
-            private final int paneHeight = 500;
             private Font font;
             {
+                int paneWidth = 500;
+                int paneHeight = 500;
                 setPreferredSize(new Dimension(paneWidth, paneHeight));
-                cellSize = (paneWidth- knownWorld.length) /knownWorld.length;
+                cellSize = (paneWidth - knownWorld.length) / knownWorld.length;
                 font = new Font("plain", Font.BOLD, cellSize);
                 JPanel worldPanel = new JPanel(){
                     {

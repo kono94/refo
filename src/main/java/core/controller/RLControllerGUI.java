@@ -13,6 +13,7 @@ import java.util.List;
 public class RLControllerGUI<A extends Enum> extends RLController<A> implements ViewListener {
     private LearningView learningView;
 
+    @SafeVarargs
     public RLControllerGUI(Environment<A> env, Method method, A... actions) {
         super(env, method, actions);
     }
@@ -102,7 +103,7 @@ public class RLControllerGUI<A extends Enum> extends RLController<A> implements 
     @Override
     public void onLearningEnd() {
         super.onLearningEnd();
-        onSaveState(method.toString() + System.currentTimeMillis() / 1000 + (learning instanceof EpisodicLearning ? "e" + ((EpisodicLearning) learning).getCurrentEpisode() : ""));
+        onSaveState(method.toString() + System.currentTimeMillis() / 1000 + (learning instanceof EpisodicLearning ? "e" + learning.getCurrentEpisode() : ""));
         SwingUtilities.invokeLater(() -> learningView.updateRewardGraph(latestRewardsHistory));
     }
 }

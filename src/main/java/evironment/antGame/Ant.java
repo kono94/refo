@@ -1,7 +1,6 @@
 package evironment.antGame;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -34,7 +34,7 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
         }
 
         StepResultEnvironment envResult = null;
-        Map<A, Double> actionValues = null;
+        Map<A, Double> actionValues;
 
         sumOfRewards = 0;
         while(envResult == null || !envResult.isDone()) {

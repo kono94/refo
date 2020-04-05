@@ -2,21 +2,20 @@ package evironment.jumpingDino;
 
 import core.State;
 import core.gui.Visualizable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-@AllArgsConstructor
 @Getter
-public class DinoState implements State, Serializable, Visualizable {
-    private int xDistanceToObstacle;
+public class DinoState extends DinoStateSimple implements State, Serializable, Visualizable {
     private boolean isJumping;
 
-    protected final double scale = 0.5;
+    public DinoState(int xDistanceToObstacle, boolean isJumping) {
+        super(xDistanceToObstacle);
+        this.isJumping = isJumping;
+    }
 
     @Override
     public String toString() {
@@ -40,29 +39,15 @@ public class DinoState implements State, Serializable, Visualizable {
     }
 
     @Override
-    public JComponent visualize() {
-        return new JComponent() {
-            {
-                setPreferredSize(new Dimension(Config.FRAME_WIDTH, (int)(scale * Config.FRAME_HEIGHT)));
-                setVisible(true);
-            }
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponents(g);
-                drawObjects(g);
-            }
-        };
-    }
-
-    public void drawObjects(Graphics g){
-        g.setColor(Color.BLACK);
-        g.fillRect(0, (int) (scale * (Config.FRAME_HEIGHT - Config.GROUND_Y)), Config.FRAME_WIDTH, 2);
-
-        g.fillRect((int)(scale * Config.DINO_STARTING_X), (int)(scale * (Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE)), (int)(scale * Config.DINO_SIZE), (int) (scale * Config.DINO_SIZE));
-        g.drawString("Distance: " + xDistanceToObstacle, (int)(scale * Config.DINO_STARTING_X),(int)(scale * (Config.FRAME_HEIGHT - Config.GROUND_Y - Config.OBSTACLE_SIZE - 40) ));
-
-        g.fillRect((int)(scale * (Config.DINO_STARTING_X + getXDistanceToObstacle())), (int)(scale * (Config.FRAME_HEIGHT - Config.GROUND_Y - Config.OBSTACLE_SIZE)), (int)(scale * Config.OBSTACLE_SIZE), (int)(scale *Config.OBSTACLE_SIZE));
-
+    protected void drawDinoInfo(Graphics g) {
+        int dinoY;
+        if(!isJumping) {
+            dinoY = Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE;
+            g.fillRect((int) (scale * Config.DINO_STARTING_X), (int) (scale * (dinoY)), (int) (scale * Config.DINO_SIZE), (int) (scale * Config.DINO_SIZE));
+        } else {
+            dinoY = Config.FRAME_HEIGHT - Config.GROUND_Y - Config.DINO_SIZE - (int) (scale * Config.MAX_JUMP_HEIGHT);
+            g.fillRect((int) (scale * Config.DINO_STARTING_X), (int) (scale * (dinoY)), (int) (scale * Config.DINO_SIZE), (int) (scale * Config.DINO_SIZE));
+        }
+        g.drawString("Distance: " + xDistanceToObstacle + " inJump: " + isJumping, (int) (scale * Config.DINO_STARTING_X), (int) (scale * (dinoY - 20)));
     }
 }

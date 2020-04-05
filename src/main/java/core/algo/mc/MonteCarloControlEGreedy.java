@@ -21,7 +21,7 @@ public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A
 
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
-    private boolean isEveryVisit;
+    private final boolean isEveryVisit;
 
 
     public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay, boolean useEveryVisit) {

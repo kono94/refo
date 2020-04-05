@@ -1,7 +1,10 @@
 package core;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Implementation of a discrete action space.
@@ -18,6 +21,7 @@ public class ListDiscreteActionSpace<A extends Enum> implements DiscreteActionSp
         actions = new ArrayList<>();
     }
 
+    @SafeVarargs
     public ListDiscreteActionSpace(A... actions){
         this.actions = new ArrayList<>(Arrays.asList(actions));
     }

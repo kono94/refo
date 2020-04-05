@@ -39,6 +39,7 @@ public class RLController<A extends Enum> implements LearningListener {
     protected int prevDelay;
     protected volatile boolean printNextEpisode;
 
+    @SafeVarargs
     public RLController(Environment<A> env, Method method, A... actions) {
         setEnvironment(env);
         setMethod(method);
@@ -102,9 +103,7 @@ public class RLController<A extends Enum> implements LearningListener {
             if(learning.isCurrentlyLearning()){
                 ((EpisodicLearning<A>) learning).learnMoreEpisodes(nrOfEpisodes);
             }else{
-                new Thread(() -> {
-                    ((EpisodicLearning<A>) learning).learn(nrOfEpisodes);
-                }).start();
+                new Thread(() -> ((EpisodicLearning<A>) learning).learn(nrOfEpisodes)).start();
             }
         } else {
             throw new RuntimeException("Triggering onLearnMoreEpisodes on non-episodic learning!");
@@ -179,7 +178,7 @@ public class RLController<A extends Enum> implements LearningListener {
     public void onEpisodeEnd(List<Double> rewardHistory) {
         latestRewardsHistory = rewardHistory;
         if(printNextEpisode) {
-            System.out.println("Episode " + ((EpisodicLearning<A>) learning).getCurrentEpisode() + " Latest Reward: " + rewardHistory.get(rewardHistory.size() - 1));
+            System.out.println("Episode " + learning.getCurrentEpisode() + " Latest Reward: " + rewardHistory.get(rewardHistory.size() - 1));
             System.out.println("Eps/sec: " + ((EpisodicLearning<A>) learning).getEpisodePerSecond());
             printNextEpisode = false;
         }

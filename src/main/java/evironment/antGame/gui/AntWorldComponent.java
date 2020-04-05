@@ -7,10 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AntWorldComponent extends JComponent {
-    private AntWorld antWorld;
 
     public AntWorldComponent(AntWorld antWorld, AntAgent antAgent){
-        this.antWorld = antWorld;
         setLayout(new BorderLayout());
         CellsScrollPane worldPane = new CellsScrollPane(antWorld.getCellArray(), antWorld.getAnt(), 10);
         CellsScrollPane antBrainPane = new CellsScrollPane(antAgent.getKnownWorld(), antWorld.getAnt(), 10);

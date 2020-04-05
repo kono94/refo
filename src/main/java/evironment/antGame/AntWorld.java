@@ -139,11 +139,9 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
         // valid movement
         if(!sc.stayOnCell) {
             myAnt.getPos().setLocation(sc.potentialNextPos);
-            if(antAgent.getCell(myAnt.getPos()).getType() == CellType.UNKNOWN){
-                // the ant will move to a cell that was previously unknown
-                // TODO: not optimal for going straight for food
-                // sc.reward = Reward.UNKNOWN_FIELD_EXPLORED;
-            }
+            antAgent.getCell(myAnt.getPos());// the ant will move to a cell that was previously unknown
+// TODO: not optimal for going straight for food
+// sc.reward = Reward.UNKNOWN_FIELD_EXPLORED;
         }
 
 

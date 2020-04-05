@@ -85,9 +85,7 @@ public class LearningInfoPanel extends JPanel {
             add(learnMoreEpisodesButton);
         }
         showQTableButton = new JButton("Show Q-Table");
-        showQTableButton.addActionListener(e -> {
-            viewListener.onShowQTable();
-        });
+        showQTableButton.addActionListener(e -> viewListener.onShowQTable());
         add(drawEnvironmentCheckbox);
         add(smoothGraphCheckbox);
         add(last100Checkbox);
