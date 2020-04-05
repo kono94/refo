@@ -32,7 +32,6 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
 
     @Override
     protected void nextEpisode() {
-
         State state = environment.reset();
         try {
             Thread.sleep(delay);
@@ -99,13 +98,13 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
                     System.out.println("final 0 expl");
                     ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(0.00f);
                 }
-                if(foodCollected == 30000) {
+                if(foodCollected == 15000){
                     try {
                         Files.writeString(Path.of(file.getPath()),  "\n", StandardOpenOption.APPEND);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    // return;
+                    return;
                 }
                 iterations++;
                 timestampTilFood = 0;

@@ -11,10 +11,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class ContinuousAnt {
-    public static final String FILE_NAME = "optDiscTimestampsNew.txt";
+    public static final String FILE_NAME = "converge22.txt";
     public static void main(String[] args) {
-        int k = 4 + 4 + 4 + 6 + 6 + 6 + 8 + 10 + 12 + 14 + 14 + 16 + 16 + 16 + 18 + 18 + 18 + 20 + 20 + 20 + 22 + 22 + 22 + 24 + 24 + 24 + 24 + 26 + 26 + 26 + 26 + 26 + 28 + 28 + 28 + 28 + 28 + 30 + 30 + 30 + 30 + 32 + 32 + 32 + 34 + 34 + 34 + 36 + 36 + 38 + 40 + 42;
-        System.out.println(k / 52f);
+        int i = 4+4+4+6+6+6+8+10+12+14+14+16+16+16+18+18+18+20+20+20+22+22+22+24+24+24+24+26+26+26+26+26+28+28+28+28+28+30+30+30+30+32+32+32+34+34+34+36+36+38+40+42;
+        System.out.println(i/52f);
         File file = new File(FILE_NAME);
         try {
             file.createNewFile();
