@@ -12,15 +12,15 @@ public class RunningAnt {
         RNG.setSeed(56);
 
         RLController<AntAction> rl = new RLControllerGUI<>(
-                new AntWorld(3, 3, 0.1),
-                Method.MC_CONTROL_FIRST_VISIT,
+                new AntWorld(8, 8),
+                Method.Q_LEARNING_OFF_POLICY_CONTROL,
                 AntAction.values());
 
         rl.setDelay(200);
         rl.setNrOfEpisodes(10000);
-        rl.setDiscountFactor(1f);
+        rl.setDiscountFactor(0.9f);
+        rl.setLearningRate(0.9f);
         rl.setEpsilon(0.15f);
-
         rl.start();
     }
 }

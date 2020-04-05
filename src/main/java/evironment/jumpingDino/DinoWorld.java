@@ -10,6 +10,9 @@ import lombok.Getter;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * 57 states
+ */
 @Getter
 public class DinoWorld implements Environment<DinoAction>, Visualizable {
     protected Dino dino;
@@ -46,19 +49,6 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
         if(action == DinoAction.JUMP){
             dino.jump();
         }
-
-//        for(int i= 0; i < 5; ++i){
-//            dino.tick();
-//            currentObstacle.tick();
-//            if(currentObstacle.getX() < -Config.OBSTACLE_SIZE){
-//                spawnNewObstacle();
-//            }
-//            comp.repaint();
-//            if(ranIntoObstacle()){
-//                done = true;
-//                break;
-//            }
-//        }
         dino.tick();
         currentObstacle.tick();
         if(currentObstacle.getX() < -Config.OBSTACLE_SIZE) {
@@ -72,6 +62,9 @@ public class DinoWorld implements Environment<DinoAction>, Visualizable {
         return new StepResultEnvironment(generateReturnState(), reward, done, "");
     }
 
+    protected State generateReturnState(){
+        return new DinoStateSimple(getDistanceToObstacle());
+    }
     protected State generateReturnState(){
         return new DinoState(getDistanceToObstacle(), dino.isInJump());
     }

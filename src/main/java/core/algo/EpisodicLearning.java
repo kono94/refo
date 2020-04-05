@@ -5,7 +5,6 @@ import core.Environment;
 import core.LearningConfig;
 import core.StepResult;
 import core.listener.LearningListener;
-import core.policy.EpsilonGreedyPolicy;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -73,7 +72,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         }
     }
 
-    protected void dispatchEpisodeStart(){
+    private void dispatchEpisodeStart(){
         ++currentEpisode;
         episodesToLearn.decrementAndGet();
         for(LearningListener l: learningListeners){
@@ -85,13 +84,20 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     protected void dispatchStepEnd() {
         super.dispatchStepEnd();
         timestamp++;
+        timestampCurrentEpisode++;
+    }
+
+    @Override
+    public void learn(){
+        learn(LearningConfig.DEFAULT_NR_OF_EPISODES);
     }
 
     private void startLearning(){
         dispatchLearningStart();
-        System.out.println(episodesToLearn.get());
         while(episodesToLearn.get() > 0){
+
             dispatchEpisodeStart();
+            timestampCurrentEpisode = 0;
             nextEpisode();
             dispatchEpisodeEnd();
         }
@@ -104,7 +110,6 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     public void learnMoreEpisodes(int nrOfEpisodes){
         episodesToLearn.addAndGet(nrOfEpisodes);
     }
-
     /**
      * Stopping the while loop by setting episodesToLearn to 0.
      * The current episode can not be interrupted, so the sleep delay
@@ -127,14 +132,8 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         delay = prevDelay;
     }
 
-    @Override
-    public void learn(){
-        learn(LearningConfig.DEFAULT_NR_OF_EPISODES);
-    }
-
     public synchronized void learn(int nrOfEpisodes){
         boolean isLearning = episodesToLearn.getAndAdd(nrOfEpisodes) != 0;
-        System.out.println(isLearning);
         if(!isLearning)
             startLearning();
     }

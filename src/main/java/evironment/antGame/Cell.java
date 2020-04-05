@@ -7,6 +7,7 @@ import java.awt.*;
 
 public class Cell {
     @Getter
+    @Setter
     private CellType type;
     @Getter
     @Setter
@@ -37,5 +38,14 @@ public class Cell {
             return this.type == cell.getType() && this.food == cell.getFood() && this.pos.x == cell.getPos().x && this.pos.y ==cell.getPos().y;
         }
         return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "type=" + type +
+                ", food=" + food +
+                ", pos=" + pos +
+                '}';
     }
 }

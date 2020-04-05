@@ -3,6 +3,8 @@ package core.algo.td;
 import core.*;
 import core.algo.EpisodicLearning;
 import core.policy.EpsilonGreedyPolicy;
+import core.policy.GreedyPolicy;
+import core.policy.Policy;
 
 import java.util.Map;
 
@@ -32,10 +34,13 @@ public class SARSA<A extends Enum> extends EpisodicLearning<A> {
 
         StepResultEnvironment envResult = null;
         Map<A, Double> actionValues = stateActionTable.getActionValues(state);
-        A action = policy.chooseAction(actionValues);
+        A  action = policy.chooseAction(actionValues);
+
+        //A action = policy.chooseAction(actionValues);
 
         sumOfRewards = 0;
         while(envResult == null || !envResult.isDone()) {
+
             // Take a step
             envResult = environment.step(action);
             sumOfRewards += envResult.getReward();
@@ -44,7 +49,8 @@ public class SARSA<A extends Enum> extends EpisodicLearning<A> {
 
             // Pick next action
             actionValues = stateActionTable.getActionValues(nextState);
-            A nextAction = policy.chooseAction(actionValues);
+
+            A  nextAction = policy.chooseAction(actionValues);
 
             // td update
             // target = reward + gamma * Q(nextState, nextAction)

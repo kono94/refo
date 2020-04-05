@@ -29,7 +29,7 @@ dependencies {
 }
 
 // Include dependent libraries in archive.
-mainClassName = "example.JumpingDino"
+mainClassName = "example.DinoSampling"
 
 
 jar {
