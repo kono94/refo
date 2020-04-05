@@ -5,17 +5,12 @@ import core.Environment;
 import core.LearningConfig;
 import core.StepResult;
 import core.listener.LearningListener;
-import example.DinoSampling;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -80,18 +75,6 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     private void dispatchEpisodeStart(){
         ++currentEpisode;
-        /*
-            2f 0.02 => 100
-            1.5f 0.02 => 75
-            1.4f 0.02 => fail
-            1.5f 0.1 => 16 !
-        */
-//        if(this.policy instanceof EpsilonGreedyPolicy){
-//            float ep = 2f/(float)currentEpisode;
-//            if(ep < 0.02) ep = 0;
-//            ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(ep);
-//            System.out.println(ep);
-//        }
         episodesToLearn.decrementAndGet();
         for(LearningListener l: learningListeners){
             l.onEpisodeStart();
@@ -103,17 +86,6 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
         super.dispatchStepEnd();
         timestamp++;
         timestampCurrentEpisode++;
-        // TODO: more sophisticated way to check convergence
-        if(false){
-            // t
-            File file = new File(DinoSampling.FILE_NAME);
-            try {
-                Files.writeString(Path.of(file.getPath()),  currentEpisode/2 + ",", StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-           // System.out.println("converged after: " + currentEpisode/2 + " episode!");
-        }
     }
 
     @Override

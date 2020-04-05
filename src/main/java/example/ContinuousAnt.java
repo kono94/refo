@@ -20,7 +20,7 @@ public class ContinuousAnt {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        RNG.setSeed(13);
+        RNG.setSeed(13, true);
         RLController<AntAction> rl = new RLControllerGUI<>(
                 new AntWorldContinuous(8, 8),
                 Method.Q_LEARNING_OFF_POLICY_CONTROL,
@@ -33,7 +33,5 @@ public class ContinuousAnt {
         rl.setLearningRate(0.9f);
         rl.setEpsilon(0.2f);
         rl.start();
-
-
     }
 }

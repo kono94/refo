@@ -20,9 +20,8 @@ public class RNG {
     private static int envSeed = 13;
     static {
         rng = new Random();
-        rng.setSeed(seed);
         rngEnv = new Random();
-        rngEnv.setSeed(13);
+        setSeed(seed, true);
     }
 
     public static Random getRandom() {
@@ -32,9 +31,16 @@ public class RNG {
         return rngEnv;
     }
 
-    public static void setSeed(int seed){
+    public static void setSeed(int seed, boolean setEnvRandom) {
         RNG.seed = seed;
         rng.setSeed(seed);
-        rngEnv.setSeed(13);
+        if(setEnvRandom) {
+            rngEnv.setSeed(13);
+        }
     }
+
+    public static void setSeed(int seed) {
+        setSeed(seed, true);
+    }
+
 }
