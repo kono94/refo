@@ -7,22 +7,19 @@ sds <- rowSds(sapply(convergence[,-1], `length<-`, max(lengths(convergence[,-1])
 men <- rowMeans(sapply(convergence[,-1], `length<-`, max(lengths(convergence[,-1]))), na.rm=TRUE)
 print(sds)
 
-# create dummy data
+# create data frame
 data <- data.frame(
   names=rownames(convergence),
   means=men,
   sds=sds
 )
-#320 QMC
-#188QMCMax
-#234 MC
-print(mean(men))
-print(men)
+
 convergence$group <- row.names(convergence)
 convergence.m <- melt(convergence, id.vars = "groups")
 
 ggplot(data) +
   geom_bar(aes(x=names, y=means, fill=means), stat="identity", colour="black", alpha=0.8) +
   geom_errorbar( aes(x=names, ymin=means, ymax=means+sds), width=0.4, colour="black", alpha=0.8, size=0.6) +
-  xlab("Epsilon") + ylab("?? Episoden bis Konvergenz") +
+ # ylim(0,104000) +
+  xlab("Epsilon") + ylab("Ø Episoden bis Konvergenz") +
   theme_bw(base_size = 24)
