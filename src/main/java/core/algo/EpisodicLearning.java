@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class EpisodicLearning<A extends Enum> extends Learning<A> implements Episodic {
+    private volatile AtomicInteger episodesToLearn = new AtomicInteger(0);
+    private int episodeSumCurrentSecond;
     @Setter
     protected int currentEpisode = 0;
-    protected volatile AtomicInteger episodesToLearn = new AtomicInteger(0);
     @Getter
     protected volatile int episodePerSecond;
-    protected int episodeSumCurrentSecond;
     protected double sumOfRewards;
     protected List<StepResult<A>> episode = new ArrayList<>();
 
@@ -84,7 +84,6 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     protected void dispatchStepEnd() {
         super.dispatchStepEnd();
         timestamp++;
-        timestampCurrentEpisode++;
     }
 
     @Override
@@ -95,9 +94,7 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
     private void startLearning(){
         dispatchLearningStart();
         while(episodesToLearn.get() > 0){
-
             dispatchEpisodeStart();
-            timestampCurrentEpisode = 0;
             nextEpisode();
             dispatchEpisodeEnd();
         }

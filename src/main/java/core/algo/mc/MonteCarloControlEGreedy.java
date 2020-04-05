@@ -60,7 +60,6 @@ public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A
             envResult = environment.step(chosenAction);
             State nextState = envResult.getState();
             sumOfRewards += envResult.getReward();
-            rewardCheckSum += envResult.getReward();
             episode.add(new StepResult<>(state, chosenAction, envResult.getReward()));
 
             state = nextState;
@@ -73,8 +72,6 @@ public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A
             timestamp++;
             dispatchStepEnd();
         }
-
-
 
         //  System.out.printf("Episode %d \t Reward: %f \n", currentEpisode, sumOfRewards);
         HashMap<Pair<State, A>, List<Integer>> stateActionPairs = new LinkedHashMap<>();

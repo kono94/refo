@@ -23,10 +23,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Getter
 public abstract class Learning<A extends Enum>{
-    // TODO: temp testing -> extract to dedicated test
-    protected int checkSum;
-    protected int rewardCheckSum;
-
     // current discrete timestamp t
     protected int timestamp;
     protected int currentEpisode;
