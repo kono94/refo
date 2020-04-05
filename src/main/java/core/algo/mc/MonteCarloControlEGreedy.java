@@ -12,19 +12,19 @@ import java.io.ObjectOutputStream;
 import java.util.*;
 
 /**
- * Includes both variants of Monte-Carlo methods
+ * Includes both! variants of Monte-Carlo methods
  * Default method is First-Visit.
  * Change to Every-Visit by setting flag "useEveryVisit" in the constructor to true.
  * @param <A>
  */
-public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends EpisodicLearning<A> {
+public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A> {
 
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
     private boolean isEveryVisit;
 
 
-    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay, boolean useEveryVisit) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay, boolean useEveryVisit) {
         super(environment, actionSpace, discountFactor, delay);
         isEveryVisit = useEveryVisit;
         this.policy = new EpsilonGreedyPolicy<>(epsilon);
@@ -33,11 +33,11 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
         returnCount = new HashMap<>();
     }
 
-    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
         this(environment, actionSpace, discountFactor, epsilon, delay, false);
     }
 
-    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
         this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_EPSILON, delay);
     }
 

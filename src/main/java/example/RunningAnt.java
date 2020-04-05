@@ -19,8 +19,8 @@ public class RunningAnt {
         rl.setDelay(200);
         rl.setNrOfEpisodes(10000);
         rl.setDiscountFactor(0.9f);
+        rl.setLearningRate(0.9f);
         rl.setEpsilon(0.15f);
-
         rl.start();
     }
 }
