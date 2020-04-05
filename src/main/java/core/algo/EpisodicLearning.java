@@ -80,18 +80,6 @@ public abstract class EpisodicLearning<A extends Enum> extends Learning<A> imple
 
     private void dispatchEpisodeStart(){
         ++currentEpisode;
-        /*
-            2f 0.02 => 100
-            1.5f 0.02 => 75
-            1.4f 0.02 => fail
-            1.5f 0.1 => 16 !
-        */
-//        if(this.policy instanceof EpsilonGreedyPolicy){
-//            float ep = 2f/(float)currentEpisode;
-//            if(ep < 0.02) ep = 0;
-//            ((EpsilonGreedyPolicy<A>) this.policy).setEpsilon(ep);
-//            System.out.println(ep);
-//        }
         episodesToLearn.decrementAndGet();
         for(LearningListener l: learningListeners){
             l.onEpisodeStart();

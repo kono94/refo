@@ -40,9 +40,9 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
         while(envResult == null || !envResult.isDone()) {
             actionValues = stateActionTable.getActionValues(state);
             A action;
-            if(currentEpisode % 2 == 0){
+            if(currentEpisode % 2 == 0) {
                 action = greedyPolicy.chooseAction(actionValues);
-            }else{
+            } else {
                 action = policy.chooseAction(actionValues);
             }
             if(converged) return;
@@ -51,7 +51,7 @@ public class QLearningOffPolicyTDControl<A extends Enum> extends EpisodicLearnin
             double reward = envResult.getReward();
             State nextState = envResult.getState();
             sumOfRewards += reward;
-            if(currentEpisode % 2 == 0){
+            if(currentEpisode % 2 == 0) {
                 state = nextState;
                 dispatchStepEnd();
                 continue;

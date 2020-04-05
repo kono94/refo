@@ -9,7 +9,7 @@ import evironment.antGame.AntWorld;
 
 public class RunningAnt {
     public static void main(String[] args) {
-        RNG.setSeed(56);
+        RNG.setSeed(56, true);
 
         RLController<AntAction> rl = new RLControllerGUI<>(
                 new AntWorld(8, 8),
@@ -20,7 +20,6 @@ public class RunningAnt {
         rl.setNrOfEpisodes(10000);
         rl.setDiscountFactor(0.9f);
         rl.setEpsilon(0.15f);
-
         rl.start();
     }
 }

@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public class DinoSampling {
-    public static final float f =0.05f;
     public static final String FILE_NAME = "advancedEveryVisit.txt";
     public static void main(String[] args) {
         File file = new File(FILE_NAME);
@@ -30,7 +29,7 @@ public class DinoSampling {
             }
             for(int i = 1; i <= 100; i++) {
                 System.out.println("seed: " + i * 13);
-                RNG.setSeed(i * 13);
+                RNG.setSeed(i * 13, true);
 
                 RLController<DinoAction> rl = new RLController<>(
                         new DinoWorldAdvanced(),

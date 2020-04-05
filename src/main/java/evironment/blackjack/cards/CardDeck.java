@@ -29,6 +29,6 @@ public class CardDeck {
             nextInt(int bound) returns random int value from (inclusive) 0
             and EXCLUSIVE! bound
           */
-        return cards.get(RNG.getRandom().nextInt(cards.size()));
+        return cards.get(RNG.getEnvRandom().nextInt(cards.size()));
     }
 }

@@ -7,7 +7,7 @@ import core.ListDiscreteActionSpace;
 import core.algo.EpisodicLearning;
 import core.algo.Learning;
 import core.algo.Method;
-import core.algo.mc.MonteCarloControlFirstVisitEGreedy;
+import core.algo.mc.MonteCarloControlEGreedy;
 import core.algo.td.QLearningOffPolicyTDControl;
 import core.algo.td.SARSA;
 import core.listener.LearningListener;
@@ -49,10 +49,10 @@ public class RLController<A extends Enum> implements LearningListener {
     public void start() {
         switch(method) {
             case MC_CONTROL_FIRST_VISIT:
-                learning = new MonteCarloControlFirstVisitEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
+                learning = new MonteCarloControlEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay);
                 break;
             case MC_CONTROL_EVERY_VISIT:
-                learning = new MonteCarloControlFirstVisitEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay, true);
+                learning = new MonteCarloControlEGreedy<>(environment, discreteActionSpace, discountFactor, epsilon, delay, true);
                 break;
 
             case SARSA_ON_POLICY_CONTROL:

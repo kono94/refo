@@ -9,7 +9,7 @@ import evironment.blackjack.PlayerAction;
 
 public class BlackJack {
     public static void main(String[] args) {
-        RNG.setSeed(55);
+        RNG.setSeed(55, true);
 
         RLController<PlayerAction> rl = new RLControllerGUI<>(
                 new BlackJackTable(),

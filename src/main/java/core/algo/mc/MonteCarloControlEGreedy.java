@@ -19,7 +19,7 @@ import java.util.*;
  * Change to Every-Visit by setting flag "useEveryVisit" in the constructor to true.
  * @param <A>
  */
-public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends EpisodicLearning<A> {
+public class MonteCarloControlEGreedy<A extends Enum> extends EpisodicLearning<A> {
 
     private Map<Pair<State, A>, Double> returnSum;
     private Map<Pair<State, A>, Integer> returnCount;
@@ -31,7 +31,7 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
     private Policy<A> greedyPolicy = new GreedyPolicy<>();
 
 
-    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay, boolean useEveryVisit) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay, boolean useEveryVisit) {
         super(environment, actionSpace, discountFactor, delay);
         isEveryVisit = useEveryVisit;
         // t
@@ -42,11 +42,11 @@ public class MonteCarloControlFirstVisitEGreedy<A extends Enum> extends Episodic
         returnCount = new HashMap<>();
     }
 
-    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, float discountFactor, float epsilon, int delay) {
         this(environment, actionSpace, discountFactor, epsilon, delay, false);
     }
 
-    public MonteCarloControlFirstVisitEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
+    public MonteCarloControlEGreedy(Environment<A> environment, DiscreteActionSpace<A> actionSpace, int delay) {
         this(environment, actionSpace, LearningConfig.DEFAULT_DISCOUNT_FACTOR, LearningConfig.DEFAULT_EPSILON, delay);
     }
 
