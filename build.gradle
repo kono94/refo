@@ -7,8 +7,8 @@ plugins {
 group 'net.lwenstrom.jan'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 8
+targetCompatibility = 8
 
 repositories {
     mavenCentral()
@@ -29,8 +29,7 @@ dependencies {
 }
 
 // Include dependent libraries in archive.
-mainClassName = "example.DinoSampling"
-
+mainClassName = "example.GUIMain"
 
 jar {
     manifest {

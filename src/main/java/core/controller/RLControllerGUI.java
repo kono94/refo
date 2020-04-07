@@ -18,6 +18,7 @@ public class RLControllerGUI<A extends Enum> extends RLController<A> implements 
         super(env, method, actions);
     }
 
+
     @Override
     protected void initListeners() {
         SwingUtilities.invokeLater(() -> {

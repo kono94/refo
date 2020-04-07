@@ -30,10 +30,9 @@ public class Grid {
                 initialGrid[x][y] = new Cell(new Point(x, y), CellType.FREE);
             }
         }
-        spawnNewFood(initialGrid);
         spawnObstacles();
         initialGrid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
-
+        spawnNewFood(initialGrid);
     }
 
     //TODO

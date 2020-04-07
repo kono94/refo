@@ -38,7 +38,7 @@ public class LearningInfoPanel extends JPanel {
             episodeLabel = new JLabel();
             add(episodeLabel);
         }
-        delaySlider = new JSlider(0, 1000, learning.getDelay());
+        delaySlider = new JSlider(1, 1000, learning.getDelay());
         delaySlider.addChangeListener(e -> viewListener.onDelayChange(delaySlider.getValue()));
         add(policyLabel);
         add(discountLabel);
