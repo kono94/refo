@@ -12,7 +12,7 @@ public class RunningAnt {
         RNG.setSeed(56);
 
         RLController<AntAction> rl = new RLControllerGUI<>(
-                new AntWorld(8, 8),
+                new AntWorld(8, 8, 1),
                 Method.Q_LEARNING_OFF_POLICY_CONTROL,
                 AntAction.values());
 

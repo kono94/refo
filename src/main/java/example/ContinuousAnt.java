@@ -11,7 +11,7 @@ public class ContinuousAnt {
     public static void main(String[] args) {
         RNG.setSeed(13, true);
         RLController<AntAction> rl = new RLControllerGUI<>(
-                new AntWorldContinuous(8, 8),
+                new AntWorldContinuous(8, 8, 1),
                 Method.Q_LEARNING_OFF_POLICY_CONTROL,
                 AntAction.values());
         rl.setDelay(200);

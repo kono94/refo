@@ -10,10 +10,12 @@ public class Grid {
     private Point start;
     private Cell[][] grid;
     private Cell[][] initialGrid;
+    private int numberOfConcurrentFood;
 
-    public Grid(int width, int height) {
+    public Grid(int width, int height, int numberOfConcurrentFood) {
         this.width = width;
         this.height = height;
+        this.numberOfConcurrentFood = numberOfConcurrentFood;
         grid = new Cell[width][height];
         initialGrid = new Cell[width][height];
         start = new Point(Constants.START_X, Constants.START_Y);
@@ -32,7 +34,9 @@ public class Grid {
         }
         spawnObstacles();
         initialGrid[start.x][start.y] = new Cell(new Point(start.x, start.y), CellType.START);
-        spawnNewFood(initialGrid);
+        for(int i = 0; i < numberOfConcurrentFood; ++i) {
+            spawnNewFood(initialGrid);
+        }
     }
 
     //TODO
@@ -66,6 +70,14 @@ public class Grid {
                 foodSpawned = true;
                // System.out.println("spawned new food at " + potFood);
                // System.out.println(initialGrid[potFood.x][potFood.y]);
+            }
+        }
+    }
+
+    public void removeAllFood() {
+        for(int x = 0; x < width; ++x) {
+            for(int y = 0; y < height; ++y) {
+                grid[x][y].setFood(0);
             }
         }
     }

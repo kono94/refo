@@ -3,8 +3,8 @@ package evironment.antGame;
 import core.State;
 
 public class AntWorldContinuousOriginalState extends AntWorldContinuous {
-    public AntWorldContinuousOriginalState(int width, int height) {
-        super(width, height);
+    public AntWorldContinuousOriginalState(int width, int height, int numberOfConcurrentFood) {
+        super(width, height, numberOfConcurrentFood);
     }
 
     public AntWorldContinuousOriginalState() {

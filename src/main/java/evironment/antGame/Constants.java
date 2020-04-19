@@ -1,6 +1,7 @@
 package evironment.antGame;
 
 public class Constants {
+    public static final int DEFAULT_CONCURRENT_FOOD = 1;
     public static final int DEFAULT_GRID_WIDTH = 8;
     public static final int DEFAULT_GRID_HEIGHT = 8;
     public static final int START_X = 5;

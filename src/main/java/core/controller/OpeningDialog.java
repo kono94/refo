@@ -86,8 +86,10 @@ public class OpeningDialog {
                 rl = new RLControllerGUI<DinoAction>(new DinoWorld(), (Method) algorithmSelection.getSelectedItem(), DinoAction.values());
             } else if(selectedScenario == Scenario.JUMPING_DINO_ADVANCED) {
                 rl = new RLControllerGUI<DinoAction>(new DinoWorldAdvanced(), (Method) algorithmSelection.getSelectedItem(), DinoAction.values());
-            } else if(selectedScenario == Scenario.ANTGAME) {
-                rl = new RLControllerGUI<AntAction>(new AntWorldContinuous(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT), (Method) algorithmSelection.getSelectedItem(), AntAction.values());
+            } else if(selectedScenario == Scenario.ANTGAME_ONE_FOOD) {
+                rl = new RLControllerGUI<AntAction>(new AntWorldContinuous(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT, 1), (Method) algorithmSelection.getSelectedItem(), AntAction.values());
+            } else if(selectedScenario == Scenario.ANTGAME_TWO_FOOD) {
+                rl = new RLControllerGUI<AntAction>(new AntWorldContinuous(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT, 2), (Method) algorithmSelection.getSelectedItem(), AntAction.values());
             } else if(selectedScenario == Scenario.BLACKJACK) {
                 rl = new RLControllerGUI<PlayerAction>(new BlackJackTable(), (Method) algorithmSelection.getSelectedItem(), PlayerAction.values());
             } else {
@@ -107,7 +109,8 @@ public class OpeningDialog {
     private enum Scenario {
         JUMPING_DINO_SIMPLE,
         JUMPING_DINO_ADVANCED,
-        ANTGAME,
+        ANTGAME_ONE_FOOD,
+        ANTGAME_TWO_FOOD,
         BLACKJACK
     }
 

@@ -36,12 +36,14 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
      * various lectures could be possible as well.
      */
     protected AntAgent antAgent;
+    protected int numberOfConcurrentFood;
 
     protected int tick;
     private int maxEpisodeTicks;
 
-    public AntWorld(int width, int height) {
-        grid = new Grid(width, height);
+    public AntWorld(int width, int height, int numberOfConcurrentFood) {
+        this.numberOfConcurrentFood = numberOfConcurrentFood;
+        grid = new Grid(width, height, numberOfConcurrentFood);
         antAgent = new AntAgent(width, height);
         myAnt = new Ant();
         maxEpisodeTicks = 1000;
@@ -49,7 +51,7 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
     }
 
     public AntWorld(){
-        this(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT);
+        this(Constants.DEFAULT_GRID_WIDTH, Constants.DEFAULT_GRID_HEIGHT, Constants.DEFAULT_CONCURRENT_FOOD);
     }
 
     protected StepCalculation processStep(AntAction action) {
@@ -62,7 +64,7 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
         sc.stayOnCell = true;
         // flag to enable a check if all food has been collected only fired if food was dropped
         // on the starting position
-        sc.checkCompletion = false;
+        sc.foodCollected = false;
 
         switch(action) {
             case MOVE_UP:
@@ -110,7 +112,7 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
                     } else {
                         sc.reward = Reward.FOOD_DROP_DOWN_SUCCESS;
                         myAnt.setPoints(myAnt.getPoints() + 1);
-                        sc.checkCompletion = true;
+                        sc.foodCollected = true;
                     }
                 }
                 break;
@@ -140,13 +142,9 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
         if(!sc.stayOnCell) {
             myAnt.getPos().setLocation(sc.potentialNextPos);
             antAgent.getCell(myAnt.getPos());// the ant will move to a cell that was previously unknown
-// TODO: not optimal for going straight for food
-// sc.reward = Reward.UNKNOWN_FIELD_EXPLORED;
         }
 
-
-
-        if(sc.checkCompletion) {
+        if(sc.foodCollected) {
             sc.done = grid.isAllFoodCollected();
         }
 
@@ -181,7 +179,7 @@ public class AntWorld implements Environment<AntAction>, Visualizable {
         boolean stayOnCell = true;
         // flag to enable a check if all food has been collected only fired if food was dropped
         // on the starting position
-        boolean checkCompletion = false;
+        boolean foodCollected = false;
     }
 
     public State reset() {

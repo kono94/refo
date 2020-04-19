@@ -4,8 +4,8 @@ import core.State;
 import core.StepResultEnvironment;
 
 public class AntWorldContinuous extends AntWorld {
-    public AntWorldContinuous(int width, int height) {
-        super(width, height);
+    public AntWorldContinuous(int width, int height, int numberOfConcurrentFood) {
+        super(width, height, numberOfConcurrentFood);
     }
 
     public AntWorldContinuous() {
@@ -14,13 +14,15 @@ public class AntWorldContinuous extends AntWorld {
 
     @Override
     public StepResultEnvironment step(AntAction action) {
-        Cell currentCell = grid.getCell(myAnt.getPos());
-
         StepCalculation sc = processStep(action);
 
         // flag is set to true if food gets dropped onto starts
-        if(sc.checkCompletion) {
-            grid.spawnNewFood();
+        if(sc.foodCollected) {
+            grid.removeAllFood();
+            System.out.println(numberOfConcurrentFood);
+            for(int i = 0; i < numberOfConcurrentFood; ++i) {
+                grid.spawnNewFood();
+            }
         }
         // valid movement
         if(!sc.stayOnCell) {
